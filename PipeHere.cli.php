@@ -1,3 +1,4 @@
+#!/usr/bin/php -q
 <?php
 
 require_once dirname(__file__)."/../../../../cli/studip_cli_env.inc.php";
