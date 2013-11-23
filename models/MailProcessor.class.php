@@ -18,9 +18,10 @@ class MailProcessor {
     }
     
     public function processBlubberMail($rawmail) {
+        $email_regular_expression='/^([-+.0-9=?A-Z_a-z{|}~])+@([-.0-9=?A-Z_a-z{|}~])+\.[a-zA-Z]{2,6}$/i';
         $mail = new PlancakeEmailParser($rawmail);
         $frommail = $mail->getHeader("From");
-        $frommail = preg_match(email_validation_class::$email_regular_expression, $frommail);
+        $frommail = preg_match($email_regular_expression, $frommail);
         $frommail = $frommail[0];
         return $frommail;
     }
