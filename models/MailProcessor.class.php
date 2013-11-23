@@ -23,6 +23,9 @@ class MailProcessor {
     }
     
     public function sendBlubberMails($event, BlubberPosting $blubber) {
+        if (!$blubber['user_id'] || !$blubber['description']) {
+            return;
+        }
         $thread = new BlubberPosting($blubber['root_id']);
         $author = $blubber->getUser();
         $reply_mail = $this->mailaccount.$this->delimiter.$thread->getId()."@".$this->maildomain;
