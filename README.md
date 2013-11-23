@@ -14,6 +14,6 @@ We only need the mailserver to receive messages that are meant to be blubber-com
 
 Add the following line to your alias-table (most of the times at /etc/aliases)
 
-    discussion: |php /usr/share/studip/public/plugins_packages/RasmusFuhse/BlubberMail/PipeHere.cli.php
+    discussion: |"php /usr/share/studip/public/plugins_packages/RasmusFuhse/BlubberMail/PipeHere.cli.php"
 
-Remember to change /usr/share/studip to the path of your local studip.
+Remember to change */usr/share/studip* to the path of your local studip.
