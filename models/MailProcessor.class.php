@@ -40,8 +40,24 @@ class MailProcessor {
                 $thread_id = $matches[1];
             }
         }
-        $output .= print_r($thread_id, true);
         $thread = new BlubberPosting($thread_id);
+        $author = User::findBySQL("Email = ?", array($frommail));
+        $author = $author[0];
+        if (!$thread->isNew() && $thread->isThread() && $author) {
+            $output .= "Es ist was am Laufen.";
+            //Rechtecheck TODO
+            
+            //Blubber hinzufügen:
+            $comment = new BlubberPosting();
+            $comment['description'] = $mail->getBody();
+            $comment['name'] = $thread['name'];
+            $comment['parent_id'] = $comment['root_id'] = $thread->getId();
+            $comment['context_type'] = $thread['context_type'];
+            $comment['Seminar_id'] = $thread['Seminar_id'];
+            $comment['external_contact'] = 0;
+            $comment['user_id'] = $author['user_id'];
+            $comment->store();
+         }
         return $output;
     }
 }
