@@ -29,7 +29,7 @@ class MailProcessor {
         $recipients_statement = DBManager::get()->prepare(
             "SELECT DISTINCT user_id " .
             "FROM blubber " .
-            "WHERE root_id = ? " .
+            "WHERE root_id = :thread_id " .
                 "AND external_contact = '0' " .
                 "AND user_id != :author_id " .
         "");
