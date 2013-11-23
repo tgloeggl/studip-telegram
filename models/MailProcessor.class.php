@@ -62,7 +62,7 @@ class MailProcessor {
                                 "AND user_id = :user_id " .
                                 "AND status IN ('autor','tutor','dozent') " .
                         "");
-                        $statement->eexecute(array('user_id' => $author['user_id'], 'seminar_id' => $thread['Seminar_id']));
+                        $statement->execute(array('user_id' => $author['user_id'], 'seminar_id' => $thread['Seminar_id']));
                         $check = (bool) $statement->fetch(PDO::FETCH_COLUMN, 0);
                     }
                     break;
