@@ -38,8 +38,6 @@ class MailProcessor {
         "");
         $recipients_statement->execute(array('thread_id' => $blubber['root_id'], 'author_id' => $blubber['user_id']));
         $recipient_ids = $recipients_statement->fetchAll(PDO::FETCH_COLUMN, 0);
-        echo "Empfänger\n";
-        var_dump($recipient_ids);
         
         foreach ($recipient_ids as $user_id) {
             $recipient = new User($user_id);
