@@ -76,7 +76,7 @@ class MailProcessor {
                 //Blubber hinzufügen:
                 $output .= "Und wir haben die Rechte. ";
                 $comment = new BlubberPosting();
-                $comment['description'] = $mail->getBody();
+                $comment['description'] = studip_utf8decode($mail->getBody());
                 $comment['name'] = $thread['name'];
                 $comment['parent_id'] = $comment['root_id'] = $thread->getId();
                 $comment['context_type'] = $thread['context_type'];
