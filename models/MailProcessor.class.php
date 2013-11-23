@@ -44,7 +44,7 @@ class MailProcessor {
             $mail->setSenderEmail($reply_mail);
             $mail->setReplyToEmail($reply_mail);
             $mail->setBodyText($blubber['description']);
-            $mail->addRecipient($user['Email'], $user['Vorname']." ".$user['Nachname']);
+            $mail->addRecipient($recipient['Email'], $recipient['Vorname']." ".$recipient['Nachname']);
             if (!get_config("MAILQUEUE_ENABLE")) {
                 $mail->send();
             } else {
