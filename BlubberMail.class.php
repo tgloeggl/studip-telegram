@@ -6,7 +6,7 @@ class BlubberMail extends StudIPPlugin implements SystemPlugin {
     
     public function __construct() {
         parent::__construct();
-        NotificationCenter::addObserver(MailProcessor::getInstance(), "sendBlubberMails", "BlubberHasSaved");
+        NotificationCenter::addObserver(MailProcessor::getInstance(), "sendBlubberMails", "PostingHasSaved");
     }
     
 }
