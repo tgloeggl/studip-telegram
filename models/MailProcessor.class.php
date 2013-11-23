@@ -1,6 +1,7 @@
 <?php
 
 require_once dirname(__file__)."/vendor/PlancakeEmailParser.php";
+require_once dirname(__file__)."/../../../core/Blubber/models/BlubberPosting.class.php";
 
 class MailProcessor {
     
