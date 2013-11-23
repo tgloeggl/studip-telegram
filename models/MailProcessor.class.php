@@ -27,13 +27,13 @@ class MailProcessor {
     }
     
     public function processBlubberMail($rawmail) {
-        $email_regular_expression='/^([-+.0-9=?A-Z_a-z{|}~])+@([-.0-9=?A-Z_a-z{|}~])+\.[a-zA-Z]{2,6}$/i';
+        $email_regular_expression='/([-+.0-9=?A-Z_a-z{|}~])+@([-.0-9=?A-Z_a-z{|}~])+\.[a-zA-Z]{2,6}/i';
         $mail = new PlancakeEmailParser($rawmail);
         $frommail = $mail->getHeader("From");
         $output .= print_r($frommail, true);
-        preg_match($email_regular_expression, $frommail, $frommail);
-        $output .= print_r($frommail, true);
-        $frommail = $frommail[0];
+        preg_match($email_regular_expression, $frommail, $matches);
+        $output .= print_r($matches, true);
+        $frommail = $matches[0];
         
         $recipients = $mail->getTo() + $mail->getCc();
         foreach ($recipients as $recipient) {
