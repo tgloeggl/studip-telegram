@@ -22,7 +22,7 @@ class MailProcessor {
         //init configs
     }
     
-    public function sendBlubberMails(BlubberPosting $blubber) {
+    public function sendBlubberMails($event, BlubberPosting $blubber) {
         $thread = new BlubberPosting($blubber['root_id']);
         $author = $blubber->getUser();
         $reply_mail = $this->mailaccount.$this->delimiter.$thread->getId()."@".$this->maildomain;
