@@ -30,9 +30,7 @@ class MailProcessor {
         $email_regular_expression='/([-+.0-9=?A-Z_a-z{|}~])+@([-.0-9=?A-Z_a-z{|}~])+\.[a-zA-Z]{2,6}/i';
         $mail = new PlancakeEmailParser($rawmail);
         $frommail = $mail->getHeader("From");
-        $output .= print_r($frommail, true);
         preg_match($email_regular_expression, $frommail, $matches);
-        $output .= print_r($matches, true);
         $frommail = $matches[0];
         
         $recipients = $mail->getTo() + $mail->getCc();
@@ -42,6 +40,7 @@ class MailProcessor {
                 $thread_id = $matches[1];
             }
         }
+        $output .= print_r($thread_id, true);
         $thread = new BlubberPosting($thread_id);
         return $output;
     }
