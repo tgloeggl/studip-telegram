@@ -29,8 +29,8 @@ class MailProcessor {
     public function processBlubberMail($rawmail) {
         $email_regular_expression='/([-+.0-9=?A-Z_a-z{|}~])+@([-.0-9=?A-Z_a-z{|}~])+\.[a-zA-Z]{2,6}/i';
         $mail = new PlancakeEmailParser($rawmail);
-        $frommail = $mail->getHeader("From");
-        preg_match($email_regular_expression, $frommail, $matches);
+        $from = $mail->getHeader("From");
+        preg_match($email_regular_expression, $from, $matches);
         $frommail = $matches[0];
         
         $recipients = $mail->getTo() + $mail->getCc();
@@ -44,19 +44,47 @@ class MailProcessor {
         $author = User::findBySQL("Email = ?", array($frommail));
         $author = $author[0];
         if (!$thread->isNew() && $thread->isThread() && $author) {
-            $output .= "Es ist was am Laufen.";
+            $output .= "Es ist was am Laufen. ";
             //Rechtecheck TODO
+            $check = false;
+            switch ($thread['context_type']) {
+                case "public":
+                    $check = true;
+                    break;
+                case "course":
+                    if ($GLOBALS['perm']->have_perm("admin", $author['user_id'])) {
+                        $check = true;
+                    } else {
+                        $statement = DBManager::get()->prepare(
+                            "SELECT 1 " .
+                            "FROM seminar_user " .
+                            "WHERE Seminar_id = :seminar_id " .
+                                "AND user_id = :user_id " .
+                                "AND status IN ('autor','tutor','dozent') " .
+                        "");
+                        $statement->eexecute(array('user_id' => $author['user_id'], 'seminar_id' => $thread['Seminar_id']));
+                        $check = (bool) $statement->fetch(PDO::FETCH_COLUMN, 0);
+                    }
+                    break;
+                case "private":
+                    $related_users = $thread->getRelatedUsers();
+                    $check = in_array($author['user_id'], $related_users);
+                    break;
+            }
             
-            //Blubber hinzufügen:
-            $comment = new BlubberPosting();
-            $comment['description'] = $mail->getBody();
-            $comment['name'] = $thread['name'];
-            $comment['parent_id'] = $comment['root_id'] = $thread->getId();
-            $comment['context_type'] = $thread['context_type'];
-            $comment['Seminar_id'] = $thread['Seminar_id'];
-            $comment['external_contact'] = 0;
-            $comment['user_id'] = $author['user_id'];
-            $comment->store();
+            if ($check) {
+                //Blubber hinzufügen:
+                $output .= "Und wir haben die Rechte. ";
+                $comment = new BlubberPosting();
+                $comment['description'] = $mail->getBody();
+                $comment['name'] = $thread['name'];
+                $comment['parent_id'] = $comment['root_id'] = $thread->getId();
+                $comment['context_type'] = $thread['context_type'];
+                $comment['Seminar_id'] = $thread['Seminar_id'];
+                $comment['external_contact'] = 0;
+                $comment['user_id'] = $author['user_id'];
+                $comment->store();
+            }
          }
         return $output;
     }
