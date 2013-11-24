@@ -73,8 +73,10 @@ class MailProcessor {
         $thread = new BlubberPosting($thread_id);
         $author = User::findBySQL("Email = ?", array($frommail));
         $author = $author[0];
-        if (!$thread->isNew() && $thread->isThread() && $author) {
-            $output .= "Es ist was am Laufen. ";
+        if (!$author) {
+            throw new AccessDeniedException("Emailadress not registered. Maybe you should try to send this with another email-adress?");
+        }
+        if (!$thread->isNew() && $thread->isThread()) {
             //Rechtecheck TODO
             $check = false;
             switch ($thread['context_type']) {
@@ -101,12 +103,16 @@ class MailProcessor {
                     $check = in_array($author['user_id'], $related_users);
                     break;
             }
+            $body = studip_utf8decode($mail->getBody());
+            if (stripos($body, "\n-- \n") !== false) {
+                $body = substr($body, 0, stripos($body, "\n-- \n"));
+            }
             
-            if ($check) {
+            if ($check && $body) {
                 //Blubber hinzufügen:
                 $output .= "Und wir haben die Rechte. ";
                 $comment = new BlubberPosting();
-                $comment['description'] = studip_utf8decode($mail->getBody());
+                $comment['description'] = $body;
                 $comment['name'] = $thread['name'];
                 $comment['parent_id'] = $comment['root_id'] = $thread->getId();
                 $comment['context_type'] = $thread['context_type'];
@@ -114,7 +120,11 @@ class MailProcessor {
                 $comment['external_contact'] = 0;
                 $comment['user_id'] = $author['user_id'];
                 $comment->store();
+            } elseif (!$check) {
+                throw new AccessDeniedException("You have no permission to comment here or this blubber does not exist anymore.");
             }
+         } else {
+             throw new AccessDeniedException("You have no permission to comment here or this blubber does not exist anymore.");
          }
         return $output;
     }
