@@ -40,7 +40,7 @@ class MailProcessor {
     }
     
     public function sendBlubberMails($event, BlubberPosting $blubber) {
-        if (!$blubber['user_id'] || !$blubber['description'] || !$blubber->isFieldDirty("description")) {
+        if (!$blubber['user_id'] || !$blubber['description'] || (!$blubber->isFieldDirty("description") && !$blubber->isNew())) {
             return;
         }
         $thread = new BlubberPosting($blubber['root_id']);
