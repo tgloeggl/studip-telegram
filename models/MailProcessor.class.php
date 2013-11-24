@@ -103,10 +103,8 @@ class MailProcessor {
                     $check = in_array($author['user_id'], $related_users);
                     break;
             }
-            $body = studip_utf8decode($mail->getBody());
-            if (stripos($body, "\n-- \n") !== false) {
-                $body = substr($body, 0, stripos($body, "\n-- \n"));
-            }
+            $body = $this->tranformBody(studip_utf8decode($mail->getBody()));
+            
             
             if ($check && $body) {
                 //Blubber hinzufügen:
@@ -127,5 +125,24 @@ class MailProcessor {
              throw new AccessDeniedException("You have no permission to comment here or this blubber does not exist anymore.");
          }
         return $output;
+    }
+    
+    protected function tranformBody($body) {
+        //Signatur entfernen:
+        $body = $this->eraseSignature($body);
+        $body = $this->eraseTOFUQuotes($body);
+        return $body;
+    }
+    
+    public function eraseSignature($body) {
+        if (stripos($body, "\n-- \n") !== false) {
+            $body = substr($body, 0, stripos($body, "\n-- \n"));
+        }
+        return $body;
+    }
+    
+    public function eraseTOFUQuotes($body) {
+        $body = preg_replace("/^Am (.*?):\n(>(.*?)\n)+/", "", $body);
+        return $body;
     }
 }
