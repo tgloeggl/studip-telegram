@@ -42,7 +42,7 @@ class MailProcessor {
         foreach ($recipient_ids as $user_id) {
             $recipient = new User($user_id);
             $mail = new StudipMail();
-            $mail->setSubject(_("Blubber Kommentar"));
+            $mail->setSubject("Re: ".$blubber['name']);
             $mail->setSenderName($author->getName());
             $mail->setSenderEmail($reply_mail);
             $mail->setReplyToEmail($reply_mail);
