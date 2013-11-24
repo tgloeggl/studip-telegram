@@ -5,13 +5,18 @@ require_once dirname(__file__)."/../../../core/Blubber/models/BlubberPosting.cla
 
 class MailProcessor {
     
+    static private $instance = null;
+    
+    //These three variables may be overwritten by local configs. See constructor.
     protected $mailaccount = "discussion";
-    protected $delimiter = "+";
-    protected $maildomain = null;
+    protected $delimiter   = "+";
+    protected $maildomain  = null;
     
     static public function getInstance() {
-        $processor = new MailProcessor();
-        return $processor;
+        if (self::$instance === null) {
+            self::$instance = new MailProcessor();
+        }
+        return self::$instance;
     }
     
     public function __construct() {
@@ -20,6 +25,18 @@ class MailProcessor {
             $this->maildomain = substr($this->maildomain, 4);
         }
         //init configs
+        $mailaccount = get_config("BLUBBERMAIL_ACCOUNT");
+        if ($mailaccount) {
+            $this->mailaccount = $mailaccount;
+        }
+        $delimiter = get_config("BLUBBERMAIL_DELIMITER");
+        if ($delimiter) {
+            $this->delimiter = $delimiter;
+        }
+        $maildomain = get_config("BLUBBERMAIL_MAILDOMAIN");
+        if ($maildomain) {
+            $this->maildomain = $maildomain;
+        }
     }
     
     public function sendBlubberMails($event, BlubberPosting $blubber) {
@@ -36,17 +53,30 @@ class MailProcessor {
                 "AND external_contact = '0' " .
                 "AND user_id != :author_id " .
         "");
-        $recipients_statement->execute(array('thread_id' => $blubber['root_id'], 'author_id' => $blubber['user_id']));
+        $recipients_statement->execute(array(
+            'thread_id' => $blubber['root_id'], 
+            'author_id' => $blubber['user_id']
+        ));
         $recipient_ids = $recipients_statement->fetchAll(PDO::FETCH_COLUMN, 0);
         
         foreach ($recipient_ids as $user_id) {
             $recipient = new User($user_id);
+            $body = $blubber['description'];
+            
+            //Noch den Originalbeitrag
+            if ($thread->getId() !== $blubber->getId()) {
+                $body .= "\n".sprintf(_("Am %s schrieb %s"), date("", $thread['mkdate']), $thread->getUser()->getName()).":\n";
+                foreach (explode("\n", $thread['description']) as $line) {
+                    $body .= ">".$line."\n";
+                }
+            }
+            
             $mail = new StudipMail();
-            $mail->setSubject("Re: ".$blubber['name']);
+            $mail->setSubject("Re: ".$thread['name']);
             $mail->setSenderName($author->getName());
             $mail->setSenderEmail($reply_mail);
             $mail->setReplyToEmail($reply_mail);
-            $mail->setBodyText($blubber['description']);
+            $mail->setBodyText($body);
             $mail->addRecipient($recipient['Email'], $recipient['Vorname']." ".$recipient['Nachname']);
             if (!get_config("MAILQUEUE_ENABLE")) {
                 $mail->send();
@@ -128,10 +158,9 @@ class MailProcessor {
     }
     
     protected function tranformBody($body) {
-        //Signatur entfernen:
         $body = $this->eraseSignature($body);
         $body = $this->eraseTOFUQuotes($body);
-        return $body;
+        return trim($body);
     }
     
     public function eraseSignature($body) {
