@@ -9,5 +9,5 @@ try {
     MailProcessor::getInstance()->processBlubberMail($rawmail);
 } catch(Exception $e) {
     echo $e->getMessage();
-    exit(75);
+    exit(69);
 }
