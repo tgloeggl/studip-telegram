@@ -7,18 +7,19 @@ class BlubberMail extends StudIPPlugin implements SystemPlugin {
     public function __construct() {
         parent::__construct();
         if ($GLOBALS['user']->id !== "nobody") {
-            if (!Navigation::hasItem("/links/blubber")) {
+            if (!Navigation::hasItem("/links/settings/blubber")) {
                 $settings_tab = new Navigation(_("Blubber"), PluginEngine::getURL($this, array(), "settings"));
-                Navigation::addItem("/links/blubber", $settings_tab);
+                Navigation::addItem("/links/settings/blubber", $settings_tab);
             }
             $settings_tab = new AutoNavigation(_("Mails"), PluginEngine::getURL($this, array(), "settings"));
-            Navigation::addItem("/links/blubber", $settings_tab);
+            Navigation::addItem("/links/settings/blubber/mails", $settings_tab);
         }
         NotificationCenter::addObserver(MailProcessor::getInstance(), "sendBlubberMails", "PostingHasSaved");
     }
     
     public function settings_action() {
-        
+        $template = $this->getTemplate("mails.php");
+        echo $template->render();
     }
     
     protected function getTemplate($template_file_name, $layout = "without_infobox") {
