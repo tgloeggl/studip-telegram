@@ -172,7 +172,7 @@ class MailProcessor {
                                 "plugins.php/blubber/streams/thread/".$thread->getId(),
                                 array('cid' => $thread['context_type'] === "course" ? $thread['Seminar_id'] : null)
                             ),
-                            sprintf(_("%s hat einen Kommentar geschrieben"), get_fullname()),
+                            sprintf(_("%s hat einen Kommentar geschrieben"), get_fullname($comment['user_id'])),
                             "posting_".$comment->getId(),
                             $avatar->getURL(Avatar::MEDIUM)
                         );
