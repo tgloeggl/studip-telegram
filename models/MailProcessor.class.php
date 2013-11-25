@@ -174,7 +174,7 @@ class MailProcessor {
                             ),
                             sprintf(_("%s hat einen Kommentar geschrieben"), get_fullname($comment['user_id'])),
                             "posting_".$comment->getId(),
-                            $avatar->getURL(Avatar::MEDIUM)
+                            $GLOBALS['ABSOLUTE_URI_STUDIP'].$avatar->getURL(Avatar::MEDIUM)
                         );
                         restoreLanguage();
                     }
@@ -193,7 +193,7 @@ class MailProcessor {
     
     protected function transformBody($body) {
         $body = $this->eraseSignature($body);
-        $body = $this->eraseTOFUQuotes($body);
+        //$body = $this->eraseTOFUQuotes($body);
         return trim($body);
     }
     
