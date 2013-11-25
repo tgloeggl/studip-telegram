@@ -209,7 +209,7 @@ class MailProcessor {
         do {
             $old_body = $body;
             $body = trim($body);
-            $body = preg_replace('/\n(\s*Am (.*):\s*\n)?(>.*(\n|\Z))+/i', "", $body);
+            $body = preg_replace('/\n(\s*Am (.*):\s*\n)?(>.*\n?)+\Z/i', "", $body);
         } while($old_body !== $body);
         return $body;
     }
