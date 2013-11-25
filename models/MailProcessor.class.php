@@ -96,12 +96,12 @@ class MailProcessor {
         
         $recipients = $mail->getTo() + $mail->getCc();
         foreach ($recipients as $recipient) {
-            $me = preg_match('/'.$this->mailaccount.'['.$this->delimiter.']([^@]+)@'.$this->maildomain.'/i', $recipient, $matches);
+            $me = preg_match('/'.$this->mailaccount.'['.$this->delimiter.']([^@]*)@'.$this->maildomain.'/i', $recipient, $matches);
             if ($me) {
                 $thread_id = $matches[1];
             }
         }
-        $thread = new BlubberPosting($thread_id);
+        $thread = new BlubberPosting($thread_id ? $thread : null);
         $author = User::findBySQL("Email = ?", array($frommail));
         $author = $author[0];
         if (!$author) {
@@ -149,7 +149,7 @@ class MailProcessor {
                 $comment['user_id'] = $author['user_id'];
                 $success = $comment->store();
                 
-                if (true) {
+                if (true) { //to be version-dependend
                     //Notifications:
                     $user_ids = array();
                     if ($thread['user_id'] && $thread['user_id'] !== $comment['user_id']) {
@@ -184,6 +184,8 @@ class MailProcessor {
             } elseif (!$check) {
                 throw new AccessDeniedException("You have no permission to comment here or this blubber does not exist anymore.");
             }
+         } elseif($thread->isNew()) {
+             
          } else {
              throw new AccessDeniedException("You have no permission to comment here or this blubber does not exist anymore.");
          }
@@ -207,7 +209,7 @@ class MailProcessor {
         do {
             $old_body = $body;
             $body = trim($body);
-            $body = preg_replace('/\n(\s*Am (.*):\s*\n)?(>.*\n)+/i', "", $body);
+            $body = preg_replace('/\n(\s*Am (.*):\s*\n)?(>.*(\n|\Z))+/i', "", $body);
         } while($old_body !== $body);
         return $body;
     }
