@@ -184,7 +184,7 @@ class MailProcessor {
             } elseif (!$check) {
                 throw new AccessDeniedException("You have no permission to comment here or this blubber does not exist anymore.");
             }
-         } elseif($thread->isNew()) {
+         //} elseif($thread->isNew()) {
              
          } else {
              throw new AccessDeniedException("You have no permission to comment here or this blubber does not exist anymore.");
