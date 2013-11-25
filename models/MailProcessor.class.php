@@ -101,7 +101,7 @@ class MailProcessor {
                 $thread_id = $matches[1];
             }
         }
-        $thread = new BlubberPosting($thread_id ? $thread : null);
+        $thread = new BlubberPosting($thread_id ? $thread_id : null);
         $author = User::findBySQL("Email = ?", array($frommail));
         $author = $author[0];
         if (!$author) {
