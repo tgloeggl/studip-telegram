@@ -134,7 +134,7 @@ class MailProcessor {
                     $check = in_array($author['user_id'], $related_users);
                     break;
             }
-            $body = $this->transformBody(studip_utf8decode($mail->getBody()));
+            $body = $this->transformBody(studip_utf8decode(quoted_printable_decode($mail->getBody())));
             
             
             if ($check && $body) {
@@ -193,7 +193,7 @@ class MailProcessor {
     
     protected function transformBody($body) {
         $body = $this->eraseSignature($body);
-        //$body = $this->eraseTOFUQuotes($body);
+        $body = $this->eraseTOFUQuotes($body);
         return trim($body);
     }
     
