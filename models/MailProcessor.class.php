@@ -171,7 +171,11 @@ class MailProcessor {
     }
     
     public function eraseTOFUQuotes($body) {
-        $body = preg_replace('/\nAm (.*):\s*\n(>.*\n)+/i', "", $body);
+        do {
+            $old_body = $body;
+            $body = trim($body);
+            $body = preg_replace('/\n(\s*Am (.*):\s*\n)?(>.*\n)+/i', "", $body);
+        } while($old_body !== $body);
         return $body;
     }
 }
