@@ -168,10 +168,9 @@ class MailProcessor {
                                 : Avatar::getNobody();
                         PersonalNotifications::add(
                             $user_id,
-                            PluginEngine::getURL(
-                                $this->plugin,
-                                array('cid' => $thread['context_type'] === "course" ? $thread['Seminar_id'] : null),
-                                "streams/thread/".$thread->getId()
+                            URLHelper::getURL(
+                                "plugins.php/blubber/streams/thread/".$thread->getId(),
+                                array('cid' => $thread['context_type'] === "course" ? $thread['Seminar_id'] : null)
                             ),
                             sprintf(_("%s hat einen Kommentar geschrieben"), get_fullname()),
                             "posting_".$comment->getId(),
