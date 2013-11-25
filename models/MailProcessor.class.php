@@ -88,6 +88,7 @@ class MailProcessor {
     
     public function processBlubberMail($rawmail) {
         $email_regular_expression='/([-+.0-9=?A-Z_a-z{|}~])+@([-.0-9=?A-Z_a-z{|}~])+\.[a-zA-Z]{2,6}/i';
+        $success = false;
         $mail = new PlancakeEmailParser($rawmail);
         $from = $mail->getHeader("From");
         preg_match($email_regular_expression, $from, $matches);
@@ -133,12 +134,11 @@ class MailProcessor {
                     $check = in_array($author['user_id'], $related_users);
                     break;
             }
-            $body = $this->tranformBody(studip_utf8decode($mail->getBody()));
+            $body = $this->transformBody(studip_utf8decode($mail->getBody()));
             
             
             if ($check && $body) {
                 //Blubber hinzufügen:
-                $output .= "Und wir haben die Rechte. ";
                 $comment = new BlubberPosting();
                 $comment['description'] = $body;
                 $comment['name'] = $thread['name'];
@@ -147,17 +147,50 @@ class MailProcessor {
                 $comment['Seminar_id'] = $thread['Seminar_id'];
                 $comment['external_contact'] = 0;
                 $comment['user_id'] = $author['user_id'];
-                $comment->store();
+                $success = $comment->store();
+                
+                if (true) {
+                    //Notifications:
+                    $user_ids = array();
+                    if ($thread['user_id'] && $thread['user_id'] !== $comment['user_id']) {
+                        $user_ids[] = $thread['user_id'];
+                    }
+                    foreach ((array) $thread->getChildren() as $child) {
+                        if ($child['user_id'] && ($child['user_id'] !== $comment['user_id']) && (!$child['external_contact'])) {
+                            $user_ids[] = $child['user_id'];
+                        }
+                    }
+                    $user_ids = array_unique($user_ids);
+                    foreach ($user_ids as $user_id) {
+                        setTempLanguage($user_id);
+                        $avatar = Visibility::verify('picture', $comment['user_id'], $user_id)
+                                ? Avatar::getAvatar($comment['user_id'])
+                                : Avatar::getNobody();
+                        PersonalNotifications::add(
+                            $user_id,
+                            PluginEngine::getURL(
+                                $this->plugin,
+                                array('cid' => $thread['context_type'] === "course" ? $thread['Seminar_id'] : null),
+                                "streams/thread/".$thread->getId()
+                            ),
+                            sprintf(_("%s hat einen Kommentar geschrieben"), get_fullname()),
+                            "posting_".$comment->getId(),
+                            $avatar->getURL(Avatar::MEDIUM)
+                        );
+                        restoreLanguage();
+                    }
+                }
+                
             } elseif (!$check) {
                 throw new AccessDeniedException("You have no permission to comment here or this blubber does not exist anymore.");
             }
          } else {
              throw new AccessDeniedException("You have no permission to comment here or this blubber does not exist anymore.");
          }
-        return $output;
+         return $success;
     }
     
-    protected function tranformBody($body) {
+    protected function transformBody($body) {
         $body = $this->eraseSignature($body);
         $body = $this->eraseTOFUQuotes($body);
         return trim($body);
