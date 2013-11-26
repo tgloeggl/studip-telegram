@@ -8,7 +8,7 @@ class MailProcessor {
     static private $instance = null;
     
     //These three variables may be overwritten by local configs. See constructor.
-    protected $mailaccount = "discussion";
+    protected $mailaccount = "blubb";
     protected $delimiter   = "+";
     protected $maildomain  = null;
     
@@ -113,12 +113,24 @@ class MailProcessor {
                 $thread_id = $matches[1];
             }
         }
-        $thread = new BlubberPosting($thread_id ? $thread_id : null);
+        switch ($thread_id) {
+            case "public":
+                $thread = new BlubberPosting();
+                $thread['context_type'] = "public";
+                break;
+            case "private":
+                $thread = new BlubberPosting();
+                $thread['context_type'] = "private";
+                break;
+            default:
+                $thread = new BlubberPosting($thread_id ? $thread_id : null);
+        }
         $author = User::findBySQL("Email = ?", array($frommail));
         $author = $author[0];
         if (!$author) {
             throw new AccessDeniedException("Emailadress not registered. Maybe you should try to send this with another email-adress?");
         }
+        $body = $this->transformBody(studip_utf8decode(quoted_printable_decode($mail->getBody())));
         if (!$thread->isNew() && $thread->isThread()) {
             //Rechtecheck TODO
             $check = false;
@@ -146,8 +158,6 @@ class MailProcessor {
                     $check = in_array($author['user_id'], $related_users);
                     break;
             }
-            $body = $this->transformBody(studip_utf8decode(quoted_printable_decode($mail->getBody())));
-            
             
             if ($check && $body) {
                 //Blubber hinzufügen:
@@ -191,16 +201,25 @@ class MailProcessor {
                         restoreLanguage();
                     }
                 }
-                
             } elseif (!$check) {
                 throw new AccessDeniedException("You have no permission to comment here or this blubber does not exist anymore.");
             }
-         //} elseif($thread->isNew()) {
-             
-         } else {
-             throw new AccessDeniedException("You have no permission to comment here or this blubber does not exist anymore.");
-         }
-         return $success;
+        } elseif($thread['context_type'] && get_config("BLUBBERMAIL_CREATE_THREADS_ALLOWED")) {
+            //create a new blubber. This is the drop-dead-evil api function to
+            //create a public or private blubber-thread with an email.
+            $thread->setId($thread->getNewId());
+            $thread['description'] = $body;
+            $thread['name'] = $thread['name'];
+            $thread['parent_id'] = 0;
+            $thread['root_id'] = $thread->getId();
+            $thread['Seminar_id'] = $author['user_id'];
+            $thread['external_contact'] = 0;
+            $thread['user_id'] = $author['user_id'];
+            $thread->store();
+        } else {
+            throw new AccessDeniedException("You have no permission to post here or this blubber does not exist anymore.");
+        }
+        return $success;
     }
     
     protected function transformBody($body) {
