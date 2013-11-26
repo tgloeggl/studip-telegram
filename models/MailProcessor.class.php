@@ -33,11 +33,11 @@ class MailProcessor {
         if ($delimiter) {
             $this->delimiter = $delimiter;
         }
-        //StudipMail::sendMessage("ras@fuhse.org", "debugging1", print_r($this->maildomain, true));
         $maildomain = get_config("BLUBBERMAIL_MAILDOMAIN");
         if (trim($maildomain)) {
             $this->maildomain = $maildomain;
         }
+        StudipMail::sendMessage("ras@fuhse.org", "debugging1", print_r($this->maildomain, true));
     }
     
     public function sendBlubberMails($event, BlubberPosting $blubber) {
