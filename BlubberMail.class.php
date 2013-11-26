@@ -15,7 +15,7 @@ class BlubberMail extends StudIPPlugin implements SystemPlugin {
             Navigation::addItem("/links/settings/blubber/mails", $settings_tab);
         }
         NotificationCenter::addObserver(MailProcessor::getInstance(), "sendBlubberMails", "PostingHasSaved");
-        var_dump(get_config("BLUBBERMAIL_ACCOUNT"));
+        var_dump(get_config("BLUBBERMAIL_MAILACCOUNT"));
     }
     
     public function settings_action() {

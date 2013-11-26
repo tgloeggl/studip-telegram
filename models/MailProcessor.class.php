@@ -25,7 +25,7 @@ class MailProcessor {
             $this->maildomain = substr($this->maildomain, 4);
         }
         //init configs
-        $mailaccount = get_config("BLUBBERMAIL_ACCOUNT");
+        $mailaccount = get_config("BLUBBERMAIL_MAILACCOUNT");
         if ($mailaccount) {
             $this->mailaccount = $mailaccount;
         }
@@ -33,7 +33,7 @@ class MailProcessor {
         if ($delimiter) {
             $this->delimiter = $delimiter;
         }
-        $maildomain = get_config("BLUBBERMAIL_MAILDOMAIN");
+        $maildomain = get_config("BLUBBERMAIL_DOMAIN");
         if (trim($maildomain)) {
             $this->maildomain = $maildomain;
         }
