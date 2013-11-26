@@ -224,7 +224,7 @@ class MailProcessor {
                         "mkdate = UNIX_TIMESTAMP() " .
                 "");
                 $statement->execute(array(
-                    'user_id' => $GLOBALS['user']->id,
+                    'user_id' => $author['user_id'],
                     'thread_id' => $thread->getId()
                 ));
             }
