@@ -1,3 +1,4 @@
+<form action="?" method="post">
 <table id="main_content" class="default">
     <colgroup>
         <col width="50%">
@@ -15,7 +16,7 @@
             <td>
                 <label>
                     <?= _("Anzahl zu sendender Kommentare an Sie") ?>
-                    <dfn><?= _("Sie bekommen Blubbermails ähnlich wie Notifications immer nur, wenn Sie selbst etwas geschrieben haben. Aber wie lange? Wollen Sie nur einmal über einen neuen Blubberkommentar per Mail benachrichtigt werden oder nur die ersten 10 mal oder immer, nachdem Sie selbst was geschrieben haben?") ?></dfn>
+                    <dfn><?= _("Sie bekommen Blubbermails ähnlich wie Notifications immer nur, wenn Sie selbst etwas geschrieben haben und dann antwortet jemand darauf. Aber wie oft? Wollen Sie nur einmal über einen neuen Blubberkommentar per Mail benachrichtigt werden oder nur die ersten 10 mal oder immer, nachdem Sie selbst was geschrieben haben?") ?></dfn>
                 </label>
             </td>
             <td>
@@ -52,4 +53,12 @@
             </td>
         </tr>
     </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="2">
+                <?= \Studip\Button::create(_("speichern"))?>
+            </td>
+        </tr>
+    </tfoot>
 </table>
+</form>

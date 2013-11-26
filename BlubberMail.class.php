@@ -18,6 +18,10 @@ class BlubberMail extends StudIPPlugin implements SystemPlugin {
     }
     
     public function settings_action() {
+        if (Request::isPost()) {
+            
+        }
+        PageLayout::setTabNavigation('/links/settings');
         $template = $this->getTemplate("mails.php");
         echo $template->render();
     }

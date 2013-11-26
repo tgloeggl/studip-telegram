@@ -63,9 +63,21 @@ class MailProcessor {
             $recipient = new User($user_id);
             $body = $blubber['description'];
             
-            //Noch den Originalbeitrag
+            //vorherigen Blubber zitieren:
             if ($thread->getId() !== $blubber->getId()) {
-                $body .= "\n\n\n".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $thread['mkdate']), $thread->getUser()->getName()).":\n";
+                $before_blubb = BlubberPosting::findBySQL("root_id = :thread_id AND mkdate < :mkdate ORDER BY mkdate DESC LIMIT 1", array(
+                    'thread_id' => $thread->getId(),
+                    'mkdate' => $blubber['mkdate']
+                ));
+                $before_blubb = $before_blubb[0];
+                $body .= "\n\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $before_blubb['mkdate']), $before_blubb->getUser()->getName()).":\n";
+                foreach (explode("\n", $before_blubb['description']) as $line) {
+                    $body .= ">".$line."\n";
+                }
+            }
+            //Noch den Originalbeitrag zitieren (wenn nötig)
+            if (($thread->getId() !== $blubber->getId()) && ($before_blubb->getId() !== $blubber->getId())) {
+                $body .= "\n\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $thread['mkdate']), $thread->getUser()->getName()).":\n";
                 foreach (explode("\n", $thread['description']) as $line) {
                     $body .= ">".$line."\n";
                 }
