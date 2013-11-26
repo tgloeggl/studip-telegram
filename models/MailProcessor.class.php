@@ -76,7 +76,7 @@ class MailProcessor {
                 }
             }
             //Noch den Originalbeitrag zitieren (wenn nötig)
-            if (($thread->getId() !== $blubber->getId()) && ($before_blubb->getId() !== $blubber->getId())) {
+            if (($thread->getId() !== $blubber->getId()) && ($before_blubb->getId() !== $thread->getId())) {
                 $body .= "\n\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $thread['mkdate']), $thread->getUser()->getName()).":\n";
                 foreach (explode("\n", $thread['description']) as $line) {
                     $body .= ">".$line."\n";
