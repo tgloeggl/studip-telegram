@@ -37,7 +37,7 @@ class MailProcessor {
         if (trim($maildomain)) {
             $this->maildomain = $maildomain;
         }
-        StudipMail::sendMessage("ras@fuhse.org", "debugging1", print_r($this->maildomain, true));
+        //StudipMail::sendMessage("ras@fuhse.org", "debugging1", print_r($this->maildomain, true));
     }
     
     public function sendBlubberMails($event, BlubberPosting $blubber) {
