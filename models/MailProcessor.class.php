@@ -33,8 +33,9 @@ class MailProcessor {
         if ($delimiter) {
             $this->delimiter = $delimiter;
         }
+        StudipMail::sendMessage("ras@fuhse.org", "debugging1", print_r($this->maildomain, true));
         $maildomain = get_config("BLUBBERMAIL_MAILDOMAIN");
-        if ($maildomain) {
+        if (trim($maildomain)) {
             $this->maildomain = $maildomain;
         }
     }
@@ -131,7 +132,6 @@ class MailProcessor {
             throw new AccessDeniedException("Emailadress not registered. Maybe you should try to send this with another email-adress?");
         }
         $body = $this->transformBody(studip_utf8decode(quoted_printable_decode($mail->getBody())));
-        StudipMail::sendMessage("ras@fuhse.org", "debugging", print_r(get_config("BLUBBERMAIL_MAILDOMAIN"), true));
         if (!$thread->isNew() && $thread->isThread()) {
             //Rechtecheck TODO
             $check = false;
