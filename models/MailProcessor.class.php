@@ -215,7 +215,19 @@ class MailProcessor {
             $thread['Seminar_id'] = $author['user_id'];
             $thread['external_contact'] = 0;
             $thread['user_id'] = $author['user_id'];
-            $thread->store();
+            $success = $thread->store();
+            if ($success) {
+                $statement = DBManager::get()->prepare(
+                    "INSERT IGNORE INTO blubber_mentions " .
+                    "SET user_id = :user_id, " .
+                        "topic_id = :thread_id, " .
+                        "mkdate = UNIX_TIMESTAMP() " .
+                "");
+                $statement->execute(array(
+                    'user_id' => $GLOBALS['user']->id,
+                    'thread_id' => $thread->getId()
+                ));
+            }
         } else {
             throw new AccessDeniedException("You have no permission to post here or this blubber does not exist anymore.");
         }
