@@ -1,4 +1,4 @@
-BlubberMail
+BlubberMail ![logo](https://raw.github.com/Krassmus/BlubberMail/master/assets/blubbermail.png)
 ===========
 
 Makes Blubber compatible with the smtp-protocol, so that users can send emails to blubber discussions.
