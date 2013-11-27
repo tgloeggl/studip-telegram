@@ -102,7 +102,6 @@ class MailProcessor {
         $email_regular_expression='/([-+.0-9=?A-Z_a-z{|}~])+@([-.0-9=?A-Z_a-z{|}~])+\.[a-zA-Z]{2,6}/i';
         $success = false;
         $mail = new PlancakeEmailParser($rawmail);
-        StudipMail::sendMessage("ras@fuhse.org", "Test-Anhang", print_r($mail, true));
         $from = $mail->getHeader("From");
         preg_match($email_regular_expression, $from, $matches);
         $frommail = $matches[0];
@@ -159,7 +158,7 @@ class MailProcessor {
                     $check = in_array($author['user_id'], $related_users);
                     break;
             }
-            
+            $body .= "\n\n\n".print_r($mail, true);
             if ($check && $body) {
                 //Blubber hinzufügen:
                 $comment = new BlubberPosting();
