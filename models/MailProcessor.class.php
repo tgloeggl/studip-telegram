@@ -158,7 +158,6 @@ class MailProcessor {
                     $check = in_array($author['user_id'], $related_users);
                     break;
             }
-            $body .= "\n\n\n".print_r($mail, true);
             if ($check && $body) {
                 //Blubber hinzufügen:
                 $comment = new BlubberPosting();
