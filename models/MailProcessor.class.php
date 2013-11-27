@@ -99,10 +99,10 @@ class MailProcessor {
     }
     
     public function processBlubberMail($rawmail) {
-        StudipMail::sendMessage("ras@fuhse.org", "Test-Anhang", $rawmail);
         $email_regular_expression='/([-+.0-9=?A-Z_a-z{|}~])+@([-.0-9=?A-Z_a-z{|}~])+\.[a-zA-Z]{2,6}/i';
         $success = false;
         $mail = new PlancakeEmailParser($rawmail);
+        StudipMail::sendMessage("ras@fuhse.org", "Test-Anhang", print_r($mail, true));
         $from = $mail->getHeader("From");
         preg_match($email_regular_expression, $from, $matches);
         $frommail = $matches[0];
