@@ -21,6 +21,7 @@
             </td>
             <td>
                 <? $default = UserConfig::get($GLOBALS['user']->id)->getValue("BLUBBER_MAX_USER_NOTIFICATIONS") ?>
+                <? var_dump($default) ?>
                 <select namd="BLUBBER_MAX_USER_NOTIFICATIONS">
                     <option value="0"><?= _("keine") ?></option>
                     <option value="1"<?= $default == "1" ? " selected" : "" ?>>1</option>
