@@ -60,41 +60,65 @@ class MailProcessor {
         $recipient_ids = $recipients_statement->fetchAll(PDO::FETCH_COLUMN, 0);
         
         foreach ($recipient_ids as $user_id) {
-            $recipient = new User($user_id);
-            $body = $blubber['description'];
-            
-            //vorherigen Blubber zitieren:
-            if ($thread->getId() !== $blubber->getId()) {
-                $before_blubb = BlubberPosting::findBySQL("root_id = :thread_id AND mkdate < :mkdate ORDER BY mkdate DESC LIMIT 1", array(
-                    'thread_id' => $thread->getId(),
-                    'mkdate' => $blubber['mkdate']
-                ));
-                $before_blubb = $before_blubb[0];
-                $body .= "\n\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $before_blubb['mkdate']), $before_blubb->getUser()->getName()).":\n";
-                foreach (explode("\n", $before_blubb['description']) as $line) {
-                    $body .= ">".$line."\n";
+            if ($this->userWantsMail($user_id, $blubber['root_id'])) {
+                $recipient = new User($user_id);
+                $body = $blubber['description'];
+
+                //vorherigen Blubber zitieren:
+                if ($thread->getId() !== $blubber->getId()) {
+                    $before_blubb = BlubberPosting::findBySQL("root_id = :thread_id AND mkdate < :mkdate ORDER BY mkdate DESC LIMIT 1", array(
+                        'thread_id' => $thread->getId(),
+                        'mkdate' => $blubber['mkdate']
+                    ));
+                    $before_blubb = $before_blubb[0];
+                    $body .= "\n\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $before_blubb['mkdate']), $before_blubb->getUser()->getName()).":\n";
+                    foreach (explode("\n", $before_blubb['description']) as $line) {
+                        $body .= ">".$line."\n";
+                    }
+                }
+                //Noch den Originalbeitrag zitieren (wenn nötig)
+                if (($thread->getId() !== $blubber->getId()) && ($before_blubb->getId() !== $thread->getId())) {
+                    $body .= "\n\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $thread['mkdate']), $thread->getUser()->getName()).":\n";
+                    foreach (explode("\n", $thread['description']) as $line) {
+                        $body .= ">".$line."\n";
+                    }
+                }
+
+                $mail = new StudipMail();
+                $mail->setSubject("Re: ".$thread['name']);
+                $mail->setSenderName($author->getName());
+                $mail->setSenderEmail($reply_mail);
+                $mail->setReplyToEmail($reply_mail);
+                $mail->setBodyText($body);
+                $mail->addRecipient($recipient['Email'], $recipient['Vorname']." ".$recipient['Nachname']);
+                if (!get_config("MAILQUEUE_ENABLE")) {
+                    $mail->send();
+                } else {
+                    MailQueueEntries::add($mail, null, $user_id);
                 }
             }
-            //Noch den Originalbeitrag zitieren (wenn nötig)
-            if (($thread->getId() !== $blubber->getId()) && ($before_blubb->getId() !== $thread->getId())) {
-                $body .= "\n\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $thread['mkdate']), $thread->getUser()->getName()).":\n";
-                foreach (explode("\n", $thread['description']) as $line) {
-                    $body .= ">".$line."\n";
-                }
-            }
-            
-            $mail = new StudipMail();
-            $mail->setSubject("Re: ".$thread['name']);
-            $mail->setSenderName($author->getName());
-            $mail->setSenderEmail($reply_mail);
-            $mail->setReplyToEmail($reply_mail);
-            $mail->setBodyText($body);
-            $mail->addRecipient($recipient['Email'], $recipient['Vorname']." ".$recipient['Nachname']);
-            if (!get_config("MAILQUEUE_ENABLE")) {
-                $mail->send();
-            } else {
-                MailQueueEntries::add($mail, null, $user_id);
-            }
+        }
+    }
+    
+    protected function userWantsMail($user_id, $thread_id) {
+        $max_notifications = UserConfig::get($user_id)->getValue("BLUBBER_MAX_USER_NOTIFICATIONS");
+        if ($max_notifications === "all" OR $max_notifications === null) {
+            return true;
+        } elseif($max_notifications > 0) {
+            $statement = DBManager::get()->prepare(
+                "SELECT COUNT(*) " .
+                "FROM blubber " .
+                "WHERE root_id = :thread_id " .
+                    "AND mkdate > (SELECT mkdate FROM blubber WHERE root_id = :thread_id AND user_id = :user_id ORDER BY mkdate DESC LIMIT 1) " .
+            "");
+            $statement->execute(array(
+                'thread_id' => $thread_id,
+                'user_id' => $user_id
+            ));
+            $new_blubbers = $statement->fetch(PDO::FETCH_COLUMN, 0);
+            return ($max_notifications >= $new_blubbers);
+        } else {
+            return false;
         }
     }
     

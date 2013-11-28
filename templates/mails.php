@@ -20,21 +20,22 @@
                 </label>
             </td>
             <td>
-                <select>
+                <? $default = UserConfig::get($GLOBALS['user']->id)->getValue("BLUBBER_MAX_USER_NOTIFICATIONS") ?>
+                <select namd="BLUBBER_MAX_USER_NOTIFICATIONS">
                     <option value="0"><?= _("keine") ?></option>
-                    <option value="">1</option>
-                    <option value="">2</option>
-                    <option value="">3</option>
-                    <option value="">4</option>
-                    <option value="">5</option>
-                    <option value="">10</option>
-                    <option value="">15</option>
-                    <option value="">20</option>
-                    <option value="">30</option>
-                    <option value="">40</option>
-                    <option value="">50</option>
-                    <option value="">100</option>
-                    <option value="all" selected><?= _("alle") ?></option>
+                    <option value="1"<?= $default == "1" ? " selected" : "" ?>>1</option>
+                    <option value="2"<?= $default == "2" ? " selected" : "" ?>>2</option>
+                    <option value="3"<?= $default == "3" ? " selected" : "" ?>>3</option>
+                    <option value="4"<?= $default == "4" ? " selected" : "" ?>>4</option>
+                    <option value="5"<?= $default == "5" ? " selected" : "" ?>>5</option>
+                    <option value="10"<?= $default == "10" ? " selected" : "" ?>>10</option>
+                    <option value="15"<?= $default == "15" ? " selected" : "" ?>>15</option>
+                    <option value="20"<?= $default == "20" ? " selected" : "" ?>>20</option>
+                    <option value="30"<?= $default == "30" ? " selected" : "" ?>>30</option>
+                    <option value="40"<?= $default == "40" ? " selected" : "" ?>>40</option>
+                    <option value="50"<?= $default == "50" ? " selected" : "" ?>>50</option>
+                    <option value="100"<?= $default == "100" ? " selected" : "" ?>>100</option>
+                    <option value="all"<?= $default === "all" || $default === null ? " selected" : "" ?>><?= _("alle") ?></option>
                 </select>
             </td>
         </tr>
