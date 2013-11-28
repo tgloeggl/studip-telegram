@@ -270,6 +270,14 @@ class MailProcessor {
         return $body;
     }
     
+    /**
+     * Most people are answering mails by quoting the whole discussion on the bottom 
+     * of the email. This is called TOFU. In Blubber, we always have the context 
+     * of a message and display it directly. So we don't need this TOFU-stuff and
+     * want to get rid of them.
+     * @param string $body : plaint text body message of the email
+     * @return string : altered body message.
+     */
     public function eraseTOFUQuotes($body) {
         do {
             $old_body = $body;

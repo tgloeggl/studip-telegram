@@ -39,6 +39,7 @@
                 </select>
             </td>
         </tr>
+        <!--
         <tr>
             <td>
                 <?= _("Benachrichtigen über Blubberstreams") ?>
@@ -53,6 +54,7 @@
                 </div>
             </td>
         </tr>
+        -->
     </tbody>
     <tfoot>
         <tr>
