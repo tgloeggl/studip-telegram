@@ -21,7 +21,6 @@ class BlubberMail extends StudIPPlugin implements SystemPlugin {
         if (Request::isPost()) {
             $config = UserConfig::get($GLOBALS['user']->id);
             $config->store('BLUBBER_MAX_USER_NOTIFICATIONS', Request::option("BLUBBER_MAX_USER_NOTIFICATIONS"));
-            var_dump(Request::get("BLUBBER_MAX_USER_NOTIFICATIONS"));
             $config->store('BLUBBER_USER_STREAM_ABO', implode(",", Request::getArray("streams")));
             PageLayout::postMessage(MessageBox::success(_("Daten erfolgreich gespeichert.")));
         }
