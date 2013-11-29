@@ -1,0 +1,80 @@
+<?php
+
+class SendMailTreads extends CronJob
+{
+    /**
+     * Returns the name of the cronjob.
+     */
+    public static function getName()
+    {
+        return _('Neue Blubber-Threads an Nutzer verschicken.');
+    }
+
+    /**
+     * Returns the description of the cronjob.
+     */
+    public static function getDescription()
+    {
+        return _('Nutzer können Blubber-Streams unter Einstellungen->Blubber->Mails abonieren. Mit diesem Cronjob wird gesichert, dass neue Blubber-Threads (keine Kommentare) verschickt werden.');
+    }
+
+    /**
+     * Setup method. Loads neccessary classes and checks environment. Will
+     * bail out with an exception if environment does not match requirements.
+     */
+    public function setUp()
+    {
+    }
+
+    /**
+     * Return the paremeters for this cronjob.
+     *
+     * @return Array Parameters.
+     */
+    public static function getParameters()
+    {
+        return array();
+    }
+
+    /**
+     * Executes the cronjob.
+     *
+     * @param mixed $last_result What the last execution of this cronjob
+     *                           returned.
+     * @param Array $parameters Parameters for this cronjob instance which
+     *                          were defined during scheduling.
+     *                          Only valid parameter at the moment is
+     *                          "verbose" which toggles verbose output while
+     *                          purging the cache.
+     */
+    public function execute($last_result, $parameters = array())
+    {
+        $statement = DBManager::get()->prepare("
+            SELECT DISTINCT user_id FROM blubbermail_abos
+        ");
+        $statement->execute();
+        $user_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+        foreach ($user_ids as $user_id) {
+            $sent_thread_ids = array();
+            $stream_statement = DBManager::get()->prepare("
+                SELECT * FROM blubbermail_abos WHERE user_id = ?
+            ");
+            $stream_statement->execute(array($user_id));
+            foreach ($stream_statement->fetchAll(PDO::FETCH_ASSOC) as $stream) {
+                if ($stream_id === "global") {
+                    $stream = BlubberStream::getGlobalStream();
+                } else {
+                    $stream = new BlubberStream($stream_id);
+                }
+                $threads = $stream->fetchThreads(0, 50);
+                foreach ($threads as $thread) {
+                    if (!in_array($thread->getId(), $sent_thread_ids)) {
+                        //send thread to user_id
+                        
+                        $sent_thread_ids[] = $thread->getId();
+                    } //else we already sent it.
+                }
+            }
+        }
+    }
+}

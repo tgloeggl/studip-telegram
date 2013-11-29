@@ -78,12 +78,16 @@ class MailProcessor {
                 }
                 //Noch den Originalbeitrag zitieren (wenn nötig)
                 if (($thread->getId() !== $blubber->getId()) && ($before_blubb->getId() !== $thread->getId())) {
-                    $body .= "\n\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $thread['mkdate']), $thread->getUser()->getName()).":\n";
+                    $body .= "\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $thread['mkdate']), $thread->getUser()->getName()).":\n";
                     foreach (explode("\n", $thread['description']) as $line) {
                         $body .= ">".$line."\n";
                     }
                 }
-
+                
+                $body .= "\n\n"._("Stud.IP verschickt Ihnen Antworten auf Ihre Blubber bzw. Kommentare. Wenn Sie das abstellen oder konfigurieren wollen, melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:\n");
+                $body .= $GLOBALS['ABSOLUTE_URI_STUDIP']."plugins.php/blubbermail/settings";
+                $body .= "\n\n";
+                        
                 $mail = new StudipMail();
                 $mail->setSubject("Re: ".$thread['name']);
                 $mail->setSenderName($author->getName());

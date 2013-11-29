@@ -39,7 +39,6 @@
                 </select>
             </td>
         </tr>
-        <!--
         <tr>
             <td>
                 <?= _("Benachrichtigen über Blubberstreams") ?>
@@ -48,13 +47,20 @@
             <td>
                 <div>
                     <label>
-                        <input type="checkbox" name="streams[]" value="global">
+                        <input type="checkbox" name="streams[]" value="global"<?= in_array("global", $abo_streams) ? " checked" : "" ?>>
                         <?= _("Globaler Stream") ?>
                     </label>
                 </div>
+                <? foreach ($streams as $stream) : ?>
+                <div>
+                    <label>
+                        <input type="checkbox" name="streams[]" value="<?= htmlReady($stream->getId()) ?>"<?= in_array($stream->getId(), $abo_streams) ? " checked" : "" ?>>
+                        <?= htmlReady($stream['name']) ?>
+                    </label>
+                </div>
+                <? endforeach ?>
             </td>
         </tr>
-        -->
     </tbody>
     <tfoot>
         <tr>

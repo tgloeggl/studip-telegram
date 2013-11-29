@@ -18,14 +18,36 @@ class BlubberMail extends StudIPPlugin implements SystemPlugin {
     }
     
     public function settings_action() {
+        $config = UserConfig::get($GLOBALS['user']->id);
         if (Request::isPost()) {
-            $config = UserConfig::get($GLOBALS['user']->id);
             $config->store('BLUBBER_MAX_USER_NOTIFICATIONS', Request::option("BLUBBER_MAX_USER_NOTIFICATIONS"));
-            $config->store('BLUBBER_USER_STREAM_ABO', implode(",", Request::getArray("streams")));
+            $delete_statement = DBManager::get()->prepare("
+                DELETE FROM blubbermail_abos WHERE user_id = ? AND stream_id NOT IN (?)
+            ");
+            $delete_statement->execute(array($GLOBALS['user']->id, Request::getArray("streams")));
+            foreach (Request::getArray("streams") as $stream_id) {
+                $add_statement = DBManager::get()->prepare("
+                    INSERT IGNORE INTO blubbermail_abos
+                    SET user_id = :user_id,
+                        stream_id = :stream_id,
+                        last_update = UNIX_TIMESTAMP()
+                ");
+                $add_statement->execute(array(
+                    'user_id' => $GLOBALS['user']->id,
+                    'stream_id' => $stream_id,
+                ));
+            }
             PageLayout::postMessage(MessageBox::success(_("Daten erfolgreich gespeichert.")));
         }
+        $get_abos = DBManager::get()->prepare("
+            SELECT stream_id FROM blubbermail_abos WHERE user_id = ?
+        ");
+        $get_abos->execute(array($GLOBALS['user']->id));
+        $abo_streams = $get_abos->fetchAll(PDO::FETCH_COLUMN, 0);
         PageLayout::setTabNavigation('/links/settings');
         $template = $this->getTemplate("mails.php");
+        $template->set_attribute("stream", BlubberStream::findMine());
+        $template->set_attribute("abo_streams", $config->getValue("BLUBBER_USER_STREAM_ABO"));
         echo $template->render();
     }
     
