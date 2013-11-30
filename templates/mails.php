@@ -63,6 +63,16 @@
             </td>
         </tr>
         <? endif ?>
+        <? if (get_config("BLUBBERMAIL_CREATE_THREADS_ALLOWED")) : ?>
+        <tr>
+            <td><?= _("Öffentliche Blubber per Mail schreiben") ?></td>
+            <td><?= htmlReady(MailProcessor::getInstance()->getReplyMail("public")) ?></td>
+        </tr>
+        <tr>
+            <td><?= _("Privaten Blubber per Mail schreiben") ?></td>
+            <td><?= htmlReady(MailProcessor::getInstance()->getReplyMail("private")) ?></td>
+        </tr>
+        <? endif ?>
     </tbody>
     <tfoot>
         <tr>
