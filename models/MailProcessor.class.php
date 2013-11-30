@@ -39,13 +39,17 @@ class MailProcessor {
         }
     }
     
+    public function getReplyMail($thread_id) {
+        return $this->mailaccount.$this->delimiter.$thread->getId()."@".$this->maildomain;
+    }
+    
     public function sendBlubberMails($event, BlubberPosting $blubber) {
         if (!$blubber['user_id'] || !$blubber['description'] || $blubber['root_id'] === $blubber->getId()) {
             return;
         }
         $thread = new BlubberPosting($blubber['root_id']);
         $author = $blubber->getUser();
-        $reply_mail = $this->mailaccount.$this->delimiter.$thread->getId()."@".$this->maildomain;
+        $reply_mail = $this->getReplyMail($blubber['root_id']);
         $recipients_statement = DBManager::get()->prepare(
             "SELECT DISTINCT user_id " .
             "FROM blubber " .
@@ -62,6 +66,7 @@ class MailProcessor {
         foreach ($recipient_ids as $user_id) {
             if ($this->userWantsMail($user_id, $blubber['root_id'])) {
                 $recipient = new User($user_id);
+                setTempLanguage($user_id);
                 $body = $blubber['description'];
 
                 //vorherigen Blubber zitieren:
@@ -84,7 +89,7 @@ class MailProcessor {
                     }
                 }
                 
-                $body .= "\n\n"._("Stud.IP verschickt Ihnen Antworten auf Ihre Blubber bzw. Kommentare. Wenn Sie das abstellen oder konfigurieren wollen, melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:\n");
+                $body .= "\n\n"._("Stud.IP verschickt Ihnen Antworten auf Ihre Blubber bzw. Kommentare per Mail. Wenn Sie das abstellen oder konfigurieren wollen, melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:\n");
                 $body .= $GLOBALS['ABSOLUTE_URI_STUDIP']."plugins.php/blubbermail/settings";
                 $body .= "\n\n";
                         
@@ -100,6 +105,7 @@ class MailProcessor {
                 } else {
                     MailQueueEntries::add($mail, null, $user_id);
                 }
+                restoreLanguage();
             }
         }
     }

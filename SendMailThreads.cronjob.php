@@ -61,15 +61,36 @@ class SendMailTreads extends CronJob
             ");
             $stream_statement->execute(array($user_id));
             foreach ($stream_statement->fetchAll(PDO::FETCH_ASSOC) as $stream) {
-                if ($stream_id === "global") {
+                if ($stream['stream_id'] === "global") {
                     $stream = BlubberStream::getGlobalStream();
                 } else {
                     $stream = new BlubberStream($stream_id);
                 }
                 $threads = $stream->fetchThreads(0, 50);
                 foreach ($threads as $thread) {
-                    if (!in_array($thread->getId(), $sent_thread_ids)) {
+                    if (!in_array($thread->getId(), $sent_thread_ids) 
+                            && $thread['mkdate'] >= $stream['last_update']) {
                         //send thread to user_id
+                        $body = $thread['description'];
+                        $body .= "\n\n"._("Stud.IP verschickt Ihnen Antworten auf Ihre Blubber bzw. Kommentare per Mail. Wenn Sie das abstellen oder konfigurieren wollen, melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:\n");
+                        $body .= $GLOBALS['ABSOLUTE_URI_STUDIP']."plugins.php/blubbermail/settings";
+                        $body .= "\n\n";
+                        $user = new User($user_id);
+                        $reply_mail = MailProcessor::getInstance()->getReplyMail($thread->getId());
+                        
+                        $mail = new StudipMail();
+                        $mail->setSubject("Re: ".$thread['name']);
+                        $mail->setSenderName($thread->getUser()->getName());
+                        $mail->setSenderEmail($reply_mail);
+                        $mail->setReplyToEmail($reply_mail);
+                        $mail->setBodyText($body);
+                        $mail->addRecipient($user['Email'], $user['Vorname']." ".$user['Nachname']);
+                        if (!get_config("MAILQUEUE_ENABLE")) {
+                            $mail->send();
+                        } else {
+                            MailQueueEntries::add($mail, null, $user_id);
+                        }
+                        restoreLanguage();
                         
                         $sent_thread_ids[] = $thread->getId();
                     } //else we already sent it.

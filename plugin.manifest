@@ -2,3 +2,4 @@ pluginname=BlubberMail
 pluginclassname=BlubberMail
 version=1.0
 origin=RasmusFuhse
+studipMinVersion=2.5

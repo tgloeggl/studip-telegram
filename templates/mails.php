@@ -39,6 +39,7 @@
                 </select>
             </td>
         </tr>
+        <? if (version_compare($GLOBALS['SOFTWARE_VERSION'], "2.5.99", ">")) : ?>
         <tr>
             <td>
                 <?= _("Benachrichtigen über Blubberstreams") ?>
@@ -61,6 +62,7 @@
                 <? endforeach ?>
             </td>
         </tr>
+        <? endif ?>
     </tbody>
     <tfoot>
         <tr>
