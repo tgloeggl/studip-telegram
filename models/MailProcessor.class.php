@@ -89,8 +89,8 @@ class MailProcessor {
                     }
                 }
                 
-                $body .= "\n\n"._("Stud.IP verschickt Ihnen Antworten auf Ihre Blubber bzw. Kommentare per Mail. Wenn Sie das abstellen oder konfigurieren wollen, melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:\n");
-                $body .= $GLOBALS['ABSOLUTE_URI_STUDIP']."plugins.php/blubbermail/settings";
+                $body .= "\n\n"._("Zum Abstellen oder konfigurieren der Blubber-Mails melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:\n");
+                $body .= URLHelper::getURL("plugins.php/blubbermail/settings");
                 $body .= "\n\n";
                         
                 $mail = new StudipMail();
