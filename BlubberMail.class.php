@@ -46,7 +46,7 @@ class BlubberMail extends StudIPPlugin implements SystemPlugin {
         $abo_streams = $get_abos->fetchAll(PDO::FETCH_COLUMN, 0);
         PageLayout::setTabNavigation('/links/settings');
         $template = $this->getTemplate("mails.php");
-        $template->set_attribute("stream", BlubberStream::findMine());
+        $template->set_attribute("streams", BlubberStream::findMine());
         $template->set_attribute("abo_streams", $config->getValue("BLUBBER_USER_STREAM_ABO"));
         echo $template->render();
     }
