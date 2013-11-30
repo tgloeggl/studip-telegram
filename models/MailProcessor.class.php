@@ -40,7 +40,7 @@ class MailProcessor {
     }
     
     public function getReplyMail($thread_id) {
-        return $this->mailaccount.$this->delimiter.$thread->getId()."@".$this->maildomain;
+        return $this->mailaccount.$this->delimiter.$thread_id."@".$this->maildomain;
     }
     
     public function sendBlubberMails($event, BlubberPosting $blubber) {
