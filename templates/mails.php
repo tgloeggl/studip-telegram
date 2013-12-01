@@ -60,6 +60,9 @@
                     </label>
                 </div>
                 <? endforeach ?>
+                <div>
+                    <a href="<?= URLHelper::getLink("plugins.php/blubber/streams/edit") ?>"><?= _("Benutzerdefinierten Stream erstellen.") ?></a>
+                </div>
             </td>
         </tr>
         <? endif ?>
