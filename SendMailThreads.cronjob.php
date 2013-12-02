@@ -54,7 +54,6 @@ class SendMailTreads extends CronJob
         ");
         $statement->execute();
         $user_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
-        return;
         foreach ($user_ids as $user_id) {
             $sent_thread_ids = array();
             $stream_statement = DBManager::get()->prepare("
@@ -62,6 +61,7 @@ class SendMailTreads extends CronJob
             ");
             $stream_statement->execute(array($user_id));
             foreach ($stream_statement->fetchAll(PDO::FETCH_ASSOC) as $stream) {
+                return;
                 if ($stream['stream_id'] === "global") {
                     $stream = BlubberStream::getGlobalStream($user_id);
                 } else {
