@@ -7,7 +7,7 @@ class SendMailTreads extends CronJob
      */
     public static function getName()
     {
-        return _('Neue Blubber-Threads an Nutzer verschicken.');
+        return _('Neue Blubber-Threads an Nutzer verschicken (Plugin: BlubberMail).');
     }
 
     /**
