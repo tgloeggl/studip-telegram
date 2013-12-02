@@ -65,16 +65,16 @@ class SendMailTreads extends CronJob
                 SELECT * FROM blubbermail_abos WHERE user_id = ?
             ");
             $stream_statement->execute(array($user_id));
-            foreach ($stream_statement->fetchAll(PDO::FETCH_ASSOC) as $stream) {
-                if ($stream['stream_id'] === "global") {
+            foreach ($stream_statement->fetchAll(PDO::FETCH_ASSOC) as $stream_abo) {
+                if ($stream_abo['stream_id'] === "global") {
                     $stream = BlubberStream::getGlobalStream($user_id);
                 } else {
-                    $stream = new BlubberStream($stream['stream_id']);
+                    $stream = new BlubberStream($stream_abo['stream_id']);
                 }
                 $threads = $stream->fetchThreads(0, 50);
                 foreach ($threads as $thread) {
                     if (!in_array($thread->getId(), $sent_thread_ids) 
-                            && $thread['mkdate'] >= $stream['last_update']
+                            && $thread['mkdate'] >= $stream_abo['last_update']
                             && !($thread['user_id'] === $user_id && $thread['external_contact'] == 0)) {
                         //send thread to user_id
                         $body = $thread['description'];
