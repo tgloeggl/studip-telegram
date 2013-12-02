@@ -24,7 +24,11 @@ class SendMailTreads extends CronJob
      */
     public function setUp()
     {
+        require_once 'lib/language.inc.php';
+        require_once 'lib/functions.php';
         require_once dirname(__file__)."/../../core/Blubber/models/BlubberStream.class.php";
+        require_once dirname(__file__)."/models/MailProcessor.class.php";
+        require_once 'lib/classes/StudipMail.class.php';
     }
 
     /**
@@ -67,8 +71,6 @@ class SendMailTreads extends CronJob
                 } else {
                     $stream = new BlubberStream($stream['stream_id']);
                 }
-                echo "ha";
-                return;
                 $threads = $stream->fetchThreads(0, 50);
                 foreach ($threads as $thread) {
                     if (!in_array($thread->getId(), $sent_thread_ids) 
