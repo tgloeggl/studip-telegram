@@ -49,7 +49,6 @@ class SendMailTreads extends CronJob
      */
     public function execute($last_result, $parameters = array())
     {
-        return;
         $statement = DBManager::get()->prepare("
             SELECT DISTINCT user_id FROM blubbermail_abos
         ");
@@ -68,6 +67,7 @@ class SendMailTreads extends CronJob
                     $stream = new BlubberStream($stream_id);
                 }
                 $threads = $stream->fetchThreads(0, 50);
+                return;
                 foreach ($threads as $thread) {
                     if (!in_array($thread->getId(), $sent_thread_ids) 
                             && $thread['mkdate'] >= $stream['last_update']
