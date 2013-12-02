@@ -194,6 +194,11 @@ class MailProcessor {
             }
             if ($check && $body) {
                 //Blubber hinzufügen:
+                BlubberPosting::$mention_posting_id = $thread->getId();
+                StudipTransformFormat::addStudipMarkup("mention1", '@\"[^\n\"]*\"', "", "BlubberPosting::mention");
+                StudipTransformFormat::addStudipMarkup("mention2", '@[^\s]*[\d\w_]+', "", "BlubberPosting::mention");
+                $body = transformBeforeSave($body);
+                
                 $comment = new BlubberPosting();
                 $comment['description'] = $body;
                 $comment['name'] = $thread['name'];
@@ -241,6 +246,10 @@ class MailProcessor {
             //create a new blubber. This is the drop-dead-evil api function to
             //create a public or private blubber-thread with an email.
             $thread->setId($thread->getNewId());
+            BlubberPosting::$mention_posting_id = $thread->getId();
+            StudipTransformFormat::addStudipMarkup("mention1", '@\"[^\n\"]*\"', "", "BlubberPosting::mention");
+            StudipTransformFormat::addStudipMarkup("mention2", '@[^\s]*[\d\w_]+', "", "BlubberPosting::mention");
+            $body = transformBeforeSave($body);
             $thread['description'] = $body;
             $thread['name'] = $thread['name'];
             $thread['parent_id'] = 0;
