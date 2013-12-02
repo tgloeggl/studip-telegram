@@ -85,7 +85,6 @@ class SendMailTreads extends CronJob
                         $body .= "\n\n";
                         $user = new User($user_id);
                         $reply_mail = MailProcessor::getInstance()->getReplyMail($thread->getId());
-                        return;
                         $mail = new StudipMail();
                         $mail->setSubject("Re: ".$thread['name']);
                         $mail->setSenderName($thread->getUser()->getName());
@@ -93,6 +92,7 @@ class SendMailTreads extends CronJob
                         $mail->setReplyToEmail($reply_mail);
                         $mail->setBodyText($body);
                         $mail->addRecipient($user['Email'], $user['Vorname']." ".$user['Nachname']);
+                        return;
                         if (!get_config("MAILQUEUE_ENABLE")) {
                             $mail->send();
                         } else {
