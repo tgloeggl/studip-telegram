@@ -85,7 +85,7 @@ class SendMailTreads extends CronJob
                         $body .= "\n\n";
                         $user = new User($user_id);
                         $reply_mail = MailProcessor::getInstance()->getReplyMail($thread->getId());
-                        
+                        return;
                         $mail = new StudipMail();
                         $mail->setSubject("Re: ".$thread['name']);
                         $mail->setSenderName($thread->getUser()->getName());
