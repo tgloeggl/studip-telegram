@@ -54,6 +54,7 @@ class SendMailTreads extends CronJob
         ");
         $statement->execute();
         $user_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+        return;
         foreach ($user_ids as $user_id) {
             $sent_thread_ids = array();
             $stream_statement = DBManager::get()->prepare("
@@ -67,7 +68,6 @@ class SendMailTreads extends CronJob
                     $stream = new BlubberStream($stream_id);
                 }
                 $threads = $stream->fetchThreads(0, 50);
-                return;
                 foreach ($threads as $thread) {
                     if (!in_array($thread->getId(), $sent_thread_ids) 
                             && $thread['mkdate'] >= $stream['last_update']
