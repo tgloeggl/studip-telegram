@@ -80,6 +80,7 @@ class SendMailTreads extends CronJob
                         //send thread to user_id
                         $body = $thread['description'];
                         $body .= "\n\n"._("Stud.IP verschickt Ihnen Antworten auf Ihre Blubber bzw. Kommentare per Mail. Wenn Sie das abstellen oder konfigurieren wollen, melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:\n");
+                        return;
                         $body .= URLHelper::getURL("plugins.php/blubbermail/settings");
                         $body .= "\n\n";
                         $user = new User($user_id);
@@ -92,7 +93,6 @@ class SendMailTreads extends CronJob
                         $mail->setReplyToEmail($reply_mail);
                         $mail->setBodyText($body);
                         $mail->addRecipient($user['Email'], $user['Vorname']." ".$user['Nachname']);
-                        return;
                         if (!get_config("MAILQUEUE_ENABLE")) {
                             $mail->send();
                         } else {
