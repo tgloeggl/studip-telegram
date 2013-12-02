@@ -26,9 +26,10 @@ class SendMailTreads extends CronJob
     {
         require_once 'lib/language.inc.php';
         require_once 'lib/functions.php';
+        require_once 'lib/classes/StudipMail.class.php';
+        require_once 'lib/classes/User.class.php';
         require_once dirname(__file__)."/../../core/Blubber/models/BlubberStream.class.php";
         require_once dirname(__file__)."/models/MailProcessor.class.php";
-        require_once 'lib/classes/StudipMail.class.php';
     }
 
     /**
