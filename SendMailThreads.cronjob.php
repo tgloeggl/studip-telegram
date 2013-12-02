@@ -24,6 +24,7 @@ class SendMailTreads extends CronJob
      */
     public function setUp()
     {
+        require_once dirname(__file__)."/../../core/Blubber/models/BlubberStream.class.php";
     }
 
     /**
@@ -61,13 +62,13 @@ class SendMailTreads extends CronJob
             ");
             $stream_statement->execute(array($user_id));
             foreach ($stream_statement->fetchAll(PDO::FETCH_ASSOC) as $stream) {
-                echo "ha";
-                return;
                 if ($stream['stream_id'] === "global") {
                     $stream = BlubberStream::getGlobalStream($user_id);
                 } else {
                     $stream = new BlubberStream($stream['stream_id']);
                 }
+                echo "ha";
+                return;
                 $threads = $stream->fetchThreads(0, 50);
                 foreach ($threads as $thread) {
                     if (!in_array($thread->getId(), $sent_thread_ids) 
