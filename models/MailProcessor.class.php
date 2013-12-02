@@ -229,7 +229,7 @@ class MailProcessor {
                             ),
                             sprintf(_("%s hat einen Kommentar geschrieben"), get_fullname($comment['user_id'])),
                             "posting_".$comment->getId(),
-                            $GLOBALS['ABSOLUTE_URI_STUDIP'].$avatar->getURL(Avatar::MEDIUM)
+                            $avatar->getURL(Avatar::MEDIUM)
                         );
                         restoreLanguage();
                     }
