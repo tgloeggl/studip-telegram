@@ -194,10 +194,17 @@ class MailProcessor {
             }
             if ($check && $body) {
                 //Blubber hinzufügen:
+                $old_fake_root = $GLOBALS['user'];
+                $faked_root = new User();
+                $faked_root->user_id = $author['user_id'];
+                $faked_root->username = 'cli';
+                $faked_root->perms = 'root';
+                $GLOBALS['user'] = new Seminar_User($faked_root);
                 BlubberPosting::$mention_posting_id = $thread->getId();
                 StudipTransformFormat::addStudipMarkup("mention1", '@\"[^\n\"]*\"', "", "BlubberPosting::mention");
                 StudipTransformFormat::addStudipMarkup("mention2", '@[^\s]*[\d\w_]+', "", "BlubberPosting::mention");
                 $body = transformBeforeSave($body);
+                $GLOBALS['user'] = $old_fake_root;
                 
                 $comment = new BlubberPosting();
                 $comment['description'] = $body;
@@ -246,10 +253,20 @@ class MailProcessor {
             //create a new blubber. This is the drop-dead-evil api function to
             //create a public or private blubber-thread with an email.
             $thread->setId($thread->getNewId());
+            
+            //transform before save
             BlubberPosting::$mention_posting_id = $thread->getId();
             StudipTransformFormat::addStudipMarkup("mention1", '@\"[^\n\"]*\"', "", "BlubberPosting::mention");
             StudipTransformFormat::addStudipMarkup("mention2", '@[^\s]*[\d\w_]+', "", "BlubberPosting::mention");
+            $old_fake_root = $GLOBALS['user'];
+            $faked_root = new User();
+            $faked_root->user_id = $author['user_id'];
+            $faked_root->username = 'cli';
+            $faked_root->perms = 'root';
+            $GLOBALS['user'] = new Seminar_User($faked_root);
             $body = transformBeforeSave($body);
+            $GLOBALS['user'] = $old_fake_root;
+            
             $thread['description'] = $body;
             $thread['name'] = $thread['name'];
             $thread['parent_id'] = 0;
