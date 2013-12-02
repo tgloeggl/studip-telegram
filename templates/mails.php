@@ -15,7 +15,7 @@
         <tr>
             <td>
                 <label>
-                    <?= _("Anzahl zu sendender Kommentare an Sie") ?>
+                    <?= _("Anzahl zu sendender Kommentare an Sie pro Thread") ?>
                     <dfn><?= _("Sie bekommen Blubbermails ähnlich wie Notifications immer nur, wenn Sie selbst etwas geschrieben haben und dann antwortet jemand darauf. Aber wie oft? Wollen Sie nur einmal über einen neuen Blubberkommentar per Mail benachrichtigt werden oder nur die ersten 10 mal oder immer, nachdem Sie selbst was geschrieben haben?") ?></dfn>
                 </label>
             </td>
