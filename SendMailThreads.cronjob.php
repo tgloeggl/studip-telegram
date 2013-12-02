@@ -28,6 +28,7 @@ class SendMailTreads extends CronJob
         require_once 'lib/functions.php';
         require_once 'lib/classes/StudipMail.class.php';
         require_once 'lib/classes/User.class.php';
+        require_once 'lib/classes/URLHelper.php';
         require_once dirname(__file__)."/../../core/Blubber/models/BlubberStream.class.php";
         require_once dirname(__file__)."/models/MailProcessor.class.php";
     }
@@ -80,8 +81,8 @@ class SendMailTreads extends CronJob
                         //send thread to user_id
                         $body = $thread['description'];
                         $body .= "\n\n"._("Stud.IP verschickt Ihnen Antworten auf Ihre Blubber bzw. Kommentare per Mail. Wenn Sie das abstellen oder konfigurieren wollen, melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:\n");
-                        return;
                         $body .= URLHelper::getURL("plugins.php/blubbermail/settings");
+                        return;
                         $body .= "\n\n";
                         $user = new User($user_id);
                         $reply_mail = MailProcessor::getInstance()->getReplyMail($thread->getId());
