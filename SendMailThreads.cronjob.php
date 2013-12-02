@@ -101,6 +101,16 @@ class SendMailTreads extends CronJob
                         $sent_thread_ids[] = $thread->getId();
                     } //else we already sent it.
                 }
+                $update_last_update_time = DBManager::get()->prepare("
+                    UPDATE blubbermail_abos 
+                    SET last_update = UNIX_TIMESTAMP()
+                    WHERE user_id = :user_id
+                        AND stream_id = :stream_id
+                ");
+                $update_last_update_time->execute(array(
+                    'user_id' => $user_id,
+                    'stream_id' => $stream_abo['stream_id']
+                ));
             }
         }
     }
