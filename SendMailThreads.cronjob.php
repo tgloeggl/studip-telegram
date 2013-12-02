@@ -29,6 +29,7 @@ class SendMailTreads extends CronJob
         require_once 'lib/classes/StudipMail.class.php';
         require_once 'lib/classes/User.class.php';
         require_once 'lib/classes/URLHelper.php';
+        require_once 'lib/models/MailQueueEntries.class.php';
         require_once dirname(__file__)."/../../core/Blubber/models/BlubberStream.class.php";
         require_once dirname(__file__)."/../../core/Blubber/models/BlubberPosting.class.php";
         require_once dirname(__file__)."/../../core/Blubber/models/BlubberUser.class.php";
@@ -90,7 +91,6 @@ class SendMailTreads extends CronJob
                         $mail = new StudipMail();
                         $mail->setSubject("Re: ".$thread['name']);
                         $mail->setSenderName($thread->getUser()->getName());
-                        return;
                         $mail->setSenderEmail($reply_mail);
                         $mail->setReplyToEmail($reply_mail);
                         $mail->setBodyText($body);
