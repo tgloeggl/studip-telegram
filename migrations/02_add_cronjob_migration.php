@@ -4,7 +4,7 @@ class AddCronjobMigration extends DBMigration
     function up() 
     {
         $new_job = array(
-            'filename'    => 'public/plugins_packages/RasmusFuhse/BlubberMail/SendMailTreads.cronjob.php',
+            'filename'    => 'public/plugins_packages/RasmusFuhse/BlubberMail/SendMailThreads.cronjob.php',
             'class'       => 'SendMailTreads',
             'priority'    => 'normal',
             'minute'      => '-1'

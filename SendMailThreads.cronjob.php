@@ -49,6 +49,7 @@ class SendMailTreads extends CronJob
      */
     public function execute($last_result, $parameters = array())
     {
+        return;
         $statement = DBManager::get()->prepare("
             SELECT DISTINCT user_id FROM blubbermail_abos
         ");
@@ -62,7 +63,7 @@ class SendMailTreads extends CronJob
             $stream_statement->execute(array($user_id));
             foreach ($stream_statement->fetchAll(PDO::FETCH_ASSOC) as $stream) {
                 if ($stream['stream_id'] === "global") {
-                    $stream = BlubberStream::getGlobalStream();
+                    $stream = BlubberStream::getGlobalStream($user_id);
                 } else {
                     $stream = new BlubberStream($stream_id);
                 }
