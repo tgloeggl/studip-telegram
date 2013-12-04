@@ -300,6 +300,7 @@ class MailProcessor {
     
     public function getMailText($blubber, $user_id) {
         setTempLanguage($user_id);
+        $old_base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
         $body = $blubber['description'];
         //vorherigen Blubber zitieren:
         if ($blubber['root_id'] !== $blubber->getId()) {
@@ -330,6 +331,7 @@ class MailProcessor {
         $body .= URLHelper::getURL("plugins.php/blubbermail/settings");
         $body .= "\n\n";
         restoreLanguage();
+        URLHelper::setBaseURL($old_base);
         return $body;
     }
 }
