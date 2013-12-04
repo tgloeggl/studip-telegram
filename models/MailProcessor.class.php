@@ -15,6 +15,7 @@ class MailProcessor {
     static public function getInstance() {
         if (self::$instance === null) {
             self::$instance = new MailProcessor();
+            bindtextdomain("blubbermail", dirname(__file__)."/../locale");
         }
         return self::$instance;
     }
@@ -66,32 +67,7 @@ class MailProcessor {
         foreach ($recipient_ids as $user_id) {
             if ($this->userWantsMail($user_id, $blubber['root_id'])) {
                 $recipient = new User($user_id);
-                setTempLanguage($user_id);
-                $body = $blubber['description'];
-
-                //vorherigen Blubber zitieren:
-                if ($thread->getId() !== $blubber->getId()) {
-                    $before_blubb = BlubberPosting::findBySQL("root_id = :thread_id AND mkdate < :mkdate ORDER BY mkdate DESC LIMIT 1", array(
-                        'thread_id' => $thread->getId(),
-                        'mkdate' => $blubber['mkdate']
-                    ));
-                    $before_blubb = $before_blubb[0];
-                    $body .= "\n\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $before_blubb['mkdate']), $before_blubb->getUser()->getName()).":\n";
-                    foreach (explode("\n", $before_blubb['description']) as $line) {
-                        $body .= ">".$line."\n";
-                    }
-                }
-                //Noch den Originalbeitrag zitieren (wenn nötig)
-                if (($thread->getId() !== $blubber->getId()) && ($before_blubb->getId() !== $thread->getId())) {
-                    $body .= "\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $thread['mkdate']), $thread->getUser()->getName()).":\n";
-                    foreach (explode("\n", $thread['description']) as $line) {
-                        $body .= ">".$line."\n";
-                    }
-                }
-                
-                $body .= "\n\n"._("Zum Abstellen oder konfigurieren der Blubber-Mails melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:\n");
-                $body .= URLHelper::getURL("plugins.php/blubbermail/settings");
-                $body .= "\n\n";
+                $body = $this->getMailText($blubber, $user_id);
                         
                 $mail = new StudipMail();
                 $mail->setSubject("Re: ".$thread['name']);
@@ -105,7 +81,6 @@ class MailProcessor {
                 } else {
                     MailQueueEntries::add($mail, null, $user_id);
                 }
-                restoreLanguage();
             }
         }
     }
@@ -320,6 +295,41 @@ class MailProcessor {
             $body = trim($body);
             $body = preg_replace('/\n(\s*Am (.*):\s*\n)?(>.*\n?)+\Z/i', "", $body);
         } while($old_body !== $body);
+        return $body;
+    }
+    
+    public function getMailText($blubber, $user_id) {
+        setTempLanguage($user_id);
+        $body = $blubber['description'];
+        //vorherigen Blubber zitieren:
+        if ($blubber['root_id'] !== $blubber->getId()) {
+            $thread = new BlubberPosting($blubber['root_id']);
+            $before_blubb = BlubberPosting::findBySQL("root_id = :thread_id AND mkdate < :mkdate ORDER BY mkdate DESC LIMIT 1", array(
+                'thread_id' => $blubber['root_id'],
+                'mkdate' => $blubber['mkdate']
+            ));
+            $before_blubb = $before_blubb[0];
+            $body .= "\n\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $before_blubb['mkdate']), $before_blubb->getUser()->getName()).":\n";
+            foreach (explode("\n", $before_blubb['description']) as $line) {
+                $body .= ">".$line."\n";
+            }
+        }
+        //Noch den Originalbeitrag zitieren (wenn nötig)
+        if (($blubber['root_id'] !== $blubber->getId()) && ($before_blubb->getId() !== $blubber['root_id'])) {
+            $body .= "\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $thread['mkdate']), $thread->getUser()->getName()).":\n";
+            foreach (explode("\n", $thread['description']) as $line) {
+                $body .= ">".$line."\n";
+            }
+        }
+
+        $body .= "\n\n";
+        $body .= dgettext("blubbermail", "Sie können auf diese Mail ganz normal antworten und Ihre Antwort wird zu einem Blubber-Kommentar.");
+        $body .= "\n";
+        $body .= dgettext("blubbermail", "Zum Abstellen oder konfigurieren der Blubber-Mails melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:");
+        $body .= "\n";
+        $body .= URLHelper::getURL("plugins.php/blubbermail/settings");
+        $body .= "\n\n";
+        restoreLanguage();
         return $body;
     }
 }

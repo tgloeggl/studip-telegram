@@ -1,0 +1,5 @@
+msgid "Sie können auf diese Mail ganz normal antworten und Ihre Antwort wird zu einem Blubber-Kommentar."
+msgstr "You can reply to this email just as usual and your answer will become a blubber-comment."
+
+msgid "Zum Abstellen oder konfigurieren der Blubber-Mails melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:"
+msgstr "To unsubscribe or configure your blubbermails login to Stud.IP and go to the following URL:"

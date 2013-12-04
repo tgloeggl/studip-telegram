@@ -82,10 +82,7 @@ class SendMailTreads extends CronJob
                             && $thread['mkdate'] >= $stream_abo['last_update']
                             && !($thread['user_id'] === $user_id && $thread['external_contact'] == 0)) {
                         //send thread to user_id
-                        $body = $thread['description'];
-                        $body .= "\n\n\n\n"._("Stud.IP verschickt Ihnen Antworten auf Ihre Blubber bzw. Kommentare per Mail. Wenn Sie das abstellen oder konfigurieren wollen, melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:\n");
-                        $body .= URLHelper::getURL("plugins.php/blubbermail/settings");
-                        $body .= "\n\n";
+                        $body = MailProcessor::getInstance()->getMailText($thread, $user_id);
                         $user = new User($user_id);
                         $reply_mail = MailProcessor::getInstance()->getReplyMail($thread->getId());
                         $mail = new StudipMail();
@@ -100,7 +97,6 @@ class SendMailTreads extends CronJob
                         } else {
                             MailQueueEntries::add($mail, null, $user_id);
                         }
-                        restoreLanguage();
                         
                         $sent_thread_ids[] = $thread->getId();
                     } //else we already sent it.

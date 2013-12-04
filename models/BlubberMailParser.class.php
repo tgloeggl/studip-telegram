@@ -5,6 +5,7 @@ class BlubberMailParser {
     protected $headers = array();
     protected $bodies = array();
     protected $content_type = null;
+    protected $content = null;
     
     public function __construct($rawmail) {
         $this->parseMail($rawmail);
@@ -35,12 +36,20 @@ class BlubberMailParser {
         $this->getContentTypeFromHeaders();
     }
     
+    public function getHeader($header) {
+        return $this->headers[strtolower($header)];
+    }
+    
     private function getContentTypeFromHeaders() 
     {
         if (isset($this->headers['content-type'])) {
             preg_match("/^(.*?) /", $this->headers['content-type'], $matches);
             $this->content_type = strtolower($matches[1]);
         }
+    }
+    
+    public function getContentType() {
+        return $this->content_type;
     }
     
     private function isLineStartingWithPrintableChar($line)
@@ -54,38 +63,42 @@ class BlubberMailParser {
         preg_match('/boundary=(.*)$/mi', $rawbodies, $matches);
         $boundary = str_replace(array("'", '"'), '', $matches[1]);
         if ($boundary) {
-            $parts = explode("--".$boundary);
+            $parts = explode("--".$boundary, $rawbodies);
             array_pop($parts);
             foreach ($parts as $rawpart) {
-                $this->bodies[] = new BlubberMailPartParser($rawpart);
+                $this->bodies[] = new BlubberMailParser($rawpart);
             }
         } else {
             //the whole body is one part and has no further headers
+            switch ($this->getHeader("Content-Transfer-Encoding")) {
+                case "quoted-printable":
+                    $this->content = quoted_printable_decode($rawbodies);
+                    break;
+                case "base64":
+                    $this->content = base64_decode(preg_replace("/(\r?\n|\r)/", "", trim($rawbodies)));
+                    break;
+                default: 
+                    $this->content = $rawbodies;
+            }
         }
     }
     
     public function getTextBody() {
-        foreach ($this->bodies as $part) {
-            
+        if (is_array($this->bodies)) {
+            foreach ($this->bodies as $part) {
+                if ($part->getContentType() === "text/plain") {
+                    return $part->getContent();
+                }
+            }
+        } else {
+            if ($this->getContentType() === "text/plain") {
+                return $this->getContent();
+            }
         }
     }
     
-}
-
-class BlubberMailPartParser {
-    
-    static public function createSimpleBody($rawbody, $content_transfer_encoding, $content_type) {
-        $part = new BlubberMailPartParser();
-        
+    public function getContent() {
+        return $this->content;
     }
     
-    public function __construct($rawpart = null) {
-        if ($rawpart !== null) {
-            $this->parsePart($rawpart);
-        }
-    }
-    
-    protected function parsePart($rawpart) {
-        
-    }
 }

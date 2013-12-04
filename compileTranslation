@@ -1,0 +1,9 @@
+#!/bin/sh
+
+LOCALE_RELATIVE_PATH="./locale"
+
+for language in en
+do
+        test -f "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/blubbermail.mo" && mv "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/blubbermail.mo" "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/blubbermail.mo.old"
+        msgfmt "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/blubbermail.po" --output-file="$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/blubbermail.mo"
+done
