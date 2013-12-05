@@ -3,3 +3,52 @@ msgstr "You can reply to this email just as usual and your answer will become a 
 
 msgid "Zum Abstellen oder konfigurieren der Blubber-Mails melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:"
 msgstr "To unsubscribe or configure your blubbermails login to Stud.IP and go to the following URL:"
+
+msgid "Blubbermails"
+msgstr "Blubbermails"
+
+msgid "Element"
+msgstr "Element"
+
+msgid "Einstellung"
+msgstr "Setting"
+
+msgid "Anzahl zu sendender Kommentare an Sie pro Thread"
+msgstr "Number of comments per thread to be sent to you"
+
+msgid "Anzahl zu sendender Kommentare an Sie pro Thread"
+msgstr "Number of comments per thread to be sent to you"
+
+msgid "Sie bekommen Blubbermails ähnlich wie Notifications immer nur, wenn Sie selbst etwas geschrieben haben und dann antwortet jemand darauf. Aber wie oft? Wollen Sie nur einmal über einen neuen Blubberkommentar per Mail benachrichtigt werden oder nur die ersten 10 mal oder immer, nachdem Sie selbst was geschrieben haben?"
+msgstr "Just like notifications you will receive blubbermails only if you have written something and someone is commenting on it. But how often? Do you want to receive a blubbermail only once per thread after you have written something or for example 10 times or none at all or always?"
+
+msgid "alle"
+msgstr "all"
+
+msgid "Benachrichtigen über Blubberstreams"
+msgstr "Notifying about blubberstreams"
+
+msgid "Oben haben Sie eingestellt, welche und wieviele Kommentare zu Blubbern Sie bekommen wollen. Hier stellen Sie ein, welche Hauptblubber (Threads) Ihnen per Mail zugeschickt werden. Sie können eigene Blubberstreams zusammen stellen, deren Hauptblubber Ihnen per Mail gesendet werden, oder Sie wählen einfach den globalen Blubber aus."
+msgstr "Now you have defined how many comments on blubbers you want to receive. And here you can define which blubber-threads you are interested in and should be sent to you via email. You can create you own blubberstreams to be sent to you or you can choose the global stream."
+
+msgid "Globaler Stream"
+msgstr "global stream"
+
+msgid "Benutzerdefinierten Stream erstellen."
+msgstr "Create a customized stream."
+
+msgid "Benutzerdefinierten Stream erstellen."
+msgstr "Create a customized stream."
+
+msgid "Öffentliche Blubber per Mail schreiben"
+msgstr "Write a public blubber via email."
+
+msgid "Privaten Blubber per Mail schreiben"
+msgstr "Write a public blubber via email."
+
+msgid "speichern"
+msgstr "save"
+
+
+
+

@@ -4,19 +4,19 @@
         <col width="50%">
         <col width="50%">
     </colgroup>
-    <caption><?= _("Blubbermails") ?></caption>
+    <caption><?= dgettext("blubbermail", "Blubbermails") ?></caption>
     <thead>
         <tr>
-            <th><?= _("Element") ?></th>
-            <th><?= _("Einstellung") ?></th>
+            <th><?= dgettext("blubbermail", "Element") ?></th>
+            <th><?= dgettext("blubbermail", "Einstellung") ?></th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>
                 <label>
-                    <?= _("Anzahl zu sendender Kommentare an Sie pro Thread") ?>
-                    <dfn><?= _("Sie bekommen Blubbermails ähnlich wie Notifications immer nur, wenn Sie selbst etwas geschrieben haben und dann antwortet jemand darauf. Aber wie oft? Wollen Sie nur einmal über einen neuen Blubberkommentar per Mail benachrichtigt werden oder nur die ersten 10 mal oder immer, nachdem Sie selbst was geschrieben haben?") ?></dfn>
+                    <?= dgettext("blubbermail", "Anzahl zu sendender Kommentare an Sie pro Thread") ?>
+                    <dfn><?= dgettext("blubbermail", "Sie bekommen Blubbermails ähnlich wie Notifications immer nur, wenn Sie selbst etwas geschrieben haben und dann antwortet jemand darauf. Aber wie oft? Wollen Sie nur einmal über einen neuen Blubberkommentar per Mail benachrichtigt werden oder nur die ersten 10 mal oder immer, nachdem Sie selbst was geschrieben haben?") ?></dfn>
                 </label>
             </td>
             <td>
@@ -35,21 +35,21 @@
                     <option value="40"<?= $default == "40" ? " selected" : "" ?>>40</option>
                     <option value="50"<?= $default == "50" ? " selected" : "" ?>>50</option>
                     <option value="100"<?= $default == "100" ? " selected" : "" ?>>100</option>
-                    <option value="all"<?= $default === "all" || $default === null ? " selected" : "" ?>><?= _("alle") ?></option>
+                    <option value="all"<?= $default === "all" || $default === null ? " selected" : "" ?>><?= dgettext("blubbermail", "alle") ?></option>
                 </select>
             </td>
         </tr>
         <? if (version_compare($GLOBALS['SOFTWARE_VERSION'], "2.5.99", ">")) : ?>
         <tr>
             <td>
-                <?= _("Benachrichtigen über Blubberstreams") ?>
-                <dfn><?= _("Oben haben Sie eingestellt, welche und wieviele Kommentare zu Blubbern Sie bekommen wollen. Hier stellen Sie ein, welche Hauptblubber (Threads) Ihnen per Mail zugeschickt werden. Sie können eigene Blubberstreams zusammen stellen, deren Hauptblubber Ihnen per Mail gesendet werden, oder Sie wählen einfach den globalen Blubber aus.") ?></dfn>
+                <?= dgettext("blubbermail", "Benachrichtigen über Blubberstreams") ?>
+                <dfn><?= dgettext("blubbermail", "Oben haben Sie eingestellt, welche und wieviele Kommentare zu Blubbern Sie bekommen wollen. Hier stellen Sie ein, welche Hauptblubber (Threads) Ihnen per Mail zugeschickt werden. Sie können eigene Blubberstreams zusammen stellen, deren Hauptblubber Ihnen per Mail gesendet werden, oder Sie wählen einfach den globalen Blubber aus.") ?></dfn>
             </td>
             <td>
                 <div>
                     <label>
                         <input type="checkbox" name="streams[]" value="global"<?= in_array("global", $abo_streams) ? " checked" : "" ?>>
-                        <?= _("Globaler Stream") ?>
+                        <?= dgettext("blubbermail", "Globaler Stream") ?>
                     </label>
                 </div>
                 <? foreach ($streams as $stream) : ?>
@@ -61,18 +61,18 @@
                 </div>
                 <? endforeach ?>
                 <div>
-                    <a href="<?= URLHelper::getLink("plugins.php/blubber/streams/edit") ?>"><?= _("Benutzerdefinierten Stream erstellen.") ?></a>
+                    <a href="<?= URLHelper::getLink("plugins.php/blubber/streams/edit") ?>"><?= dgettext("blubbermail", "Benutzerdefinierten Stream erstellen.") ?></a>
                 </div>
             </td>
         </tr>
         <? endif ?>
         <? if (get_config("BLUBBERMAIL_CREATE_THREADS_ALLOWED")) : ?>
         <tr>
-            <td><?= _("Öffentliche Blubber per Mail schreiben") ?></td>
+            <td><?= dgettext("blubbermail", "Öffentliche Blubber per Mail schreiben") ?></td>
             <td><?= htmlReady(MailProcessor::getInstance()->getReplyMail("public")) ?></td>
         </tr>
         <tr>
-            <td><?= _("Privaten Blubber per Mail schreiben") ?></td>
+            <td><?= dgettext("blubbermail", "Privaten Blubber per Mail schreiben") ?></td>
             <td><?= htmlReady(MailProcessor::getInstance()->getReplyMail("private")) ?></td>
         </tr>
         <? endif ?>
@@ -80,7 +80,7 @@
     <tfoot>
         <tr>
             <td colspan="2">
-                <?= \Studip\Button::create(_("speichern"))?>
+                <?= \Studip\Button::create(dgettext("blubbermail", "speichern"))?>
             </td>
         </tr>
     </tfoot>
