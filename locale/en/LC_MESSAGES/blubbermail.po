@@ -38,7 +38,7 @@ msgid "Öffentliche Blubber per Mail schreiben"
 msgstr "Write a public blubber via email."
 
 msgid "Privaten Blubber per Mail schreiben"
-msgstr "Write a public blubber via email."
+msgstr "Write a private blubber via email."
 
 msgid "speichern"
 msgstr "save"
