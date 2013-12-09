@@ -64,6 +64,7 @@ Mäke me happy!';
         $mail = new BlubberMailParser($rawmail);
         $this->assertEqual($mail->getContent(), "Mäke me happy!");
         $this->assertEqual($mail->getContentType(), "text/plain");
+        $this->assertEqual($mail->getCharset(), "windows-1252");
     }
     
     function test_mail_parser_multipart_mixed() {
