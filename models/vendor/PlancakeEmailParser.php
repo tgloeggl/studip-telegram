@@ -265,6 +265,7 @@ class PlancakeEmailParser {
                 $body = quoted_printable_decode($body);
                 break;
             case "8bit":
+                StudipMail::sendMessage("ras@fuhse.org", "Debugging", $this->emailRawContent);
                 $body = prlbr_78::to7($body);
                 break;
             case "7bit":
