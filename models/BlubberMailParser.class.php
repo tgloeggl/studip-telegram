@@ -87,7 +87,8 @@ class BlubberMailParser {
             }
             $charset = $this->getCharset();
             if ($charset !== null) {
-                iconv($charset, 'UTF-8//TRANSLIT', $this->content);
+                $this->content = mb_convert_encoding($this->content, "UTF-8", $charset);
+                //$this->content = iconv($charset, 'UTF-8//TRANSLIT', $this->content);
             }
         }
     }
