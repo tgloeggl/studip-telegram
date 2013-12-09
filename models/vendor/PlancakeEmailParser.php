@@ -211,6 +211,9 @@ class PlancakeEmailParser {
         }
         
         foreach ($this->rawBodyLines as $line) {
+            if ($contentTransferEncoding == null && preg_match('/^Content-Transfer-Encoding: ?(.*)/i', $line, $matches)) {
+                $contentTransferEncoding = $matches[1];
+            }
             if (!$detectedContentType) {
                 
                 if (preg_match($contentTypeRegex, $line, $matches)) {
@@ -226,10 +229,6 @@ class PlancakeEmailParser {
                 if(preg_match('/charset=(.*)/i', $line, $matches)) {
                     $charset = strtoupper(trim($matches[1], '"')); 
                 }                 
-                
-                if ($contentTransferEncoding == null && preg_match('/^Content-Transfer-Encoding: ?(.*)/i', $line, $matches)) {
-                    $contentTransferEncoding = $matches[1];
-                }                
                 
                 if (self::isNewLine($line)) {
                     $waitingForContentStart = false;
