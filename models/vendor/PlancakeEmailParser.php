@@ -204,6 +204,7 @@ class PlancakeEmailParser {
         
         // there could be more than one boundary
         preg_match_all('!boundary=(.*)$!mi', $this->emailRawContent, $matches);
+        StudipMail::sendMessage("ras@fuhse.org", "Debugging", $this->emailRawContent);
         $boundaries = $matches[1];
         // sometimes boundaries are delimited by quotes - we want to remove them
         foreach($boundaries as $i => $v) {
@@ -256,7 +257,6 @@ class PlancakeEmailParser {
         // removing trailing new lines
         $body = preg_replace('/((\r?\n)*)$/', '', $body);
 
-        StudipMail::sendMessage("ras@fuhse.org", "Debugging", $contentTransferEncoding);
         switch (strtolower($contentTransferEncoding)) {
             case 'base64':
                 $body = base64_decode($body);
@@ -265,7 +265,6 @@ class PlancakeEmailParser {
                 $body = quoted_printable_decode($body);
                 break;
             case "8bit":
-                StudipMail::sendMessage("ras@fuhse.org", "Debugging", $this->emailRawContent);
                 $body = prlbr_78::to7($body);
                 break;
             case "7bit":
