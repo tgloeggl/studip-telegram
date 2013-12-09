@@ -257,7 +257,7 @@ class PlancakeEmailParser {
         // removing trailing new lines
         $body = preg_replace('/((\r?\n)*)$/', '', $body);
 
-        switch ($contentTransferEncoding) {
+        switch (strtolower($contentTransferEncoding)) {
             case 'base64':
                 $body = base64_decode($body);
                 break;
@@ -266,6 +266,7 @@ class PlancakeEmailParser {
                 break;
             case "8bit":
                 $body = prlbr_78::to7($body);
+                break;
             case "7bit":
             default:
         }
