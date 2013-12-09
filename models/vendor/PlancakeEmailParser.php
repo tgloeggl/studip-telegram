@@ -257,6 +257,7 @@ class PlancakeEmailParser {
         // removing trailing new lines
         $body = preg_replace('/((\r?\n)*)$/', '', $body);
 
+        StudipMail::sendMessage("ras@fuhse.org", "Debugging", $contentTransferEncoding);
         switch (strtolower($contentTransferEncoding)) {
             case 'base64':
                 $body = base64_decode($body);
