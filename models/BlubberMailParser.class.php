@@ -85,6 +85,10 @@ class BlubberMailParser {
                 default: 
                     $this->content = $rawbody;
             }
+            $charset = $this->getCharset();
+            if ($charset !== null) {
+                iconv($charset, 'UTF-8//TRANSLIT', $this->content);
+            }
         }
     }
     
@@ -97,6 +101,20 @@ class BlubberMailParser {
             }
         } else {
             if ($this->getContentType() === "text/plain") {
+                return $this->getContent();
+            }
+        }
+    }
+    
+    public function getHtmlBody() {
+        if ($this->isMultipart()) {
+            foreach ($this->bodies as $part) {
+                if ($part->getContentType() === "text/html") {
+                    return $part->getContent();
+                }
+            }
+        } else {
+            if ($this->getContentType() === "text/html") {
                 return $this->getContent();
             }
         }
@@ -147,6 +165,12 @@ class BlubberMailParser {
             $filename = str_replace(array("'", '"'), '', $matches[1]);
         }
         return $filename;
+    }
+    
+    public function getCharset() {
+        $raw_content_type = $this->getHeader("Content-Type");
+        preg_match('/charset=(.*)$/mi', $raw_content_type, $matches);
+        return $matches[1] ? strtolower($matches[1]) : null;
     }
     
     public function getContent() {

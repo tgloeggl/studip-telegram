@@ -204,7 +204,6 @@ class PlancakeEmailParser {
         
         // there could be more than one boundary
         preg_match_all('!boundary=(.*)$!mi', $this->emailRawContent, $matches);
-        StudipMail::sendMessage("ras@fuhse.org", "Debugging", $this->emailRawContent);
         $boundaries = $matches[1];
         // sometimes boundaries are delimited by quotes - we want to remove them
         foreach($boundaries as $i => $v) {

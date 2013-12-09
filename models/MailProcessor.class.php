@@ -1,6 +1,7 @@
 <?php
 
 require_once dirname(__file__)."/vendor/PlancakeEmailParser.php";
+require_once dirname(__file__)."/BlubberMailParser.class.php";
 require_once dirname(__file__)."/../../../core/Blubber/models/BlubberPosting.class.php";
 
 class MailProcessor {
@@ -110,13 +111,12 @@ class MailProcessor {
     public function processBlubberMail($rawmail) {
         $email_regular_expression='/([-+.0-9=?A-Z_a-z{|}~])+@([-.0-9=?A-Z_a-z{|}~])+\.[a-zA-Z]{2,6}/i';
         $success = false;
-        $mail = new PlancakeEmailParser($rawmail);
+        $mail = new BlubberMailParser($rawmail);
         $from = $mail->getHeader("From");
         preg_match($email_regular_expression, $from, $matches);
         $frommail = $matches[0];
         
-        $recipients = $mail->getTo() + $mail->getCc();
-        foreach ($recipients as $recipient) {
+        foreach (explode(",", $mail->getHeader("To").",".$mail->getHeader("CC")) as $recipient) {
             $me = preg_match('/'.$this->mailaccount.'['.$this->delimiter.']([^@]*)@'.$this->maildomain.'/i', $recipient, $matches);
             if ($me) {
                 $thread_id = $matches[1];
@@ -139,7 +139,7 @@ class MailProcessor {
         if (!$author) {
             throw new AccessDeniedException("Emailadress not registered. Maybe you should try to send this with another email-adress?");
         }
-        $body = $this->transformBody(studip_utf8decode(quoted_printable_decode($mail->getBody())));
+        $body = $this->transformBody(studip_utf8decode($mail->getTextBody()));
         if (!$thread->isNew() && $thread->isThread()) {
             //Rechtecheck TODO
             $check = false;
