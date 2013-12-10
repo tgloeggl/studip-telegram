@@ -322,7 +322,7 @@ class MailProcessor {
             $doc = array();
             $doc['user_id'] = $author['user_id'];
             $doc['name'] = $doc['filename'] = $attachment['filename'] ? studip_utf8decode($attachment['filename']) : md5(uniqid());
-            $doc['author_name'] = $author->getName();
+            $doc['author_name'] = get_fullname($author['user_id']);
             $doc['seminar_id'] = $folder_context;
             $doc['range_id'] = $context && $context['context_type'] === "course" ? $folder_id : $parent_folder_id;
             $doc['filesize'] = strlen($attachment['content']);
