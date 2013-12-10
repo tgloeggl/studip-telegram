@@ -340,6 +340,7 @@ class MailProcessor {
                 }
             }
         }
+        return $body;
     }
     
     protected function transformBody($body) {
