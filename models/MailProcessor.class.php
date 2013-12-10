@@ -167,6 +167,8 @@ class MailProcessor {
                     break;
             }
             if ($check && $body) {
+                //Anhänge hinzufügen:
+                $body = $this->appendAttachments($body, $mail->getAttachments(), $author, $thread);
                 //Blubber hinzufügen:
                 $old_fake_root = $GLOBALS['user'];
                 $faked_root = new User();
@@ -265,6 +267,79 @@ class MailProcessor {
             throw new AccessDeniedException("You have no permission to post here or this blubber does not exist anymore.");
         }
         return $success;
+    }
+    
+    protected function appendAttachments($body, $attachments, $author, $context = null) {
+        if (!count($attachments)) {
+            return;
+        }
+        
+        $db = DBManager::get();
+        $folder_context = $context && $context['context_type'] === "course" ? $context['Seminar_id'] : $author['user_id'];
+        $folder_id = md5("Blubber_".$folder_context."_".$author['user_id']);
+        $parent_folder_id = md5("Blubber_".$folder_context);
+        if (!$context || $context['context_type'] !== "course") {
+            $folder_id = $parent_folder_id;
+        }
+        $folder = $db->query(
+            "SELECT * " .
+            "FROM folder " .
+            "WHERE folder_id = ".$db->quote($folder_id)." " .
+        "")->fetch(PDO::FETCH_COLUMN, 0);
+        if (!$folder) {
+            $folder = $db->query(
+                "SELECT * " .
+                "FROM folder " .
+                "WHERE folder_id = ".$db->quote($parent_folder_id)." " .
+            "")->fetch(PDO::FETCH_COLUMN, 0);
+            if (!$folder) {
+                $db->exec(
+                    "INSERT IGNORE INTO folder " .
+                    "SET folder_id = ".$db->quote($parent_folder_id).", " .
+                        "range_id = ".$db->quote($folder_context).", " .
+                        "user_id = ".$db->quote($author['user_id']).", " .
+                        "name = ".$db->quote("BlubberDateien").", " .
+                        "permission = '7', " .
+                        "mkdate = ".$db->quote(time()).", " .
+                        "chdate = ".$db->quote(time())." " .
+                "");
+            }
+            if ($context_type === "course") {
+                $db->exec(
+                    "INSERT IGNORE INTO folder " .
+                    "SET folder_id = ".$db->quote($folder_id).", " .
+                        "range_id = ".$db->quote($parent_folder_id).", " .
+                        "user_id = ".$db->quote($author['user_id']).", " .
+                        "name = ".$db->quote(get_fullname()).", " .
+                        "permission = '7', " .
+                        "mkdate = ".$db->quote(time()).", " .
+                        "chdate = ".$db->quote(time())." " .
+                "");
+            }
+        }
+        
+        foreach ($attachments as $attachment) {
+            $doc = array();
+            $doc['user_id'] = $author['user_id'];
+            $doc['name'] = $doc['filename'] = $attachment['filename'] ? studip_utf8decode($attachment['filename']) : md5(uniqid());
+            $doc['author_name'] = $author->getName();
+            $doc['seminar_id'] = $folder_context;
+            $doc['range_id'] = $context && $context['context_type'] === "course" ? $folder_id : $parent_folder_id;
+            $doc['filesize'] = strlen($attachment['content']);
+            $temp_name = $GLOBALS['TMP_PATH']."/file_".md5(uniqid());
+            file_put_contents($temp_name, $attachment['content']);
+            $newfile = StudipDocument::createWithFile($temp_name, $doc);
+            if ($newfile) {
+                $type = get_mime_type($newfile['filename']);
+                $type = substr($type, 0, strpos($type, "/") + 1);
+                $url = GetDownloadLink($newfile->getId(), $newfile['filename']);
+                if (in_array($type, array("image", "video", "audio"))) {
+                    $body = "[".($type !== "image" ? $type : "img")."]".$url . "\n\n" . $body;
+                } else {
+                    $body .= "\n\n[".$newfile['filename']."]".$url;
+                }
+            }
+        }
     }
     
     protected function transformBody($body) {
