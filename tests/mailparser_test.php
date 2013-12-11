@@ -24,7 +24,7 @@ Content-Transfer-Encoding: 8bit
 
  Mäke me happy!';
         $mail = new BlubberMailParser($rawmail);
-        $this->assertEqual($mail->getContent(), " Mäke me happy!");
+        $this->assertEqual(studip_utf8decode($mail->getContent()), " Mäke me happy!");
         $this->assertEqual($mail->getContentType(), "text/plain");
     }
     
@@ -62,7 +62,7 @@ Content-Transfer-Encoding: 8bit
 
 Mäke me happy!';
         $mail = new BlubberMailParser($rawmail);
-        $this->assertEqual($mail->getContent(), "Mäke me happy!");
+        $this->assertEqual(studip_utf8decode($mail->getContent()), "Mäke me happy!");
         $this->assertEqual($mail->getContentType(), "text/plain");
         $this->assertEqual($mail->getCharset(), "windows-1252");
     }
