@@ -331,9 +331,8 @@ class MailProcessor {
             $newfile = StudipDocument::createWithFile($temp_name, $doc);
             if ($newfile) {
                 $type = get_mime_type($newfile['filename']);
-                $type = substr($type, 0, strpos($type, "/") + 1);
+                $type = substr($type, 0, strpos($type, "/"));
                 $url = GetDownloadLink($newfile->getId(), $newfile['filename']);
-                StudipMail::sendMessage("ras@fuhse.org", "Anhang", $type);
                 if (in_array($type, array("image", "video", "audio"))) {
                     $body = "[".($type !== "image" ? $type : "img")."]".$url . "\n\n" . $body;
                 } else {
