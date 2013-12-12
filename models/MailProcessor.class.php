@@ -270,7 +270,6 @@ class MailProcessor {
     }
     
     protected function appendAttachments($body, $attachments, $author, $context = null) {
-        StudipMail::sendMessage("Ras@fuhse.org", "Anhänge", print_r($attachments, true));
         if (!count($attachments)) {
             return;
         }
@@ -305,7 +304,7 @@ class MailProcessor {
                         "chdate = ".$db->quote(time())." " .
                 "");
             }
-            if ($context_type === "course") {
+            if ($context && $context['context_type'] === "course") {
                 $db->exec(
                     "INSERT IGNORE INTO folder " .
                     "SET folder_id = ".$db->quote($folder_id).", " .
@@ -334,6 +333,7 @@ class MailProcessor {
                 $type = get_mime_type($newfile['filename']);
                 $type = substr($type, 0, strpos($type, "/") + 1);
                 $url = GetDownloadLink($newfile->getId(), $newfile['filename']);
+                StudipMail::sendMessage("ras@fuhse.org", "Anhang", $type);
                 if (in_array($type, array("image", "video", "audio"))) {
                     $body = "[".($type !== "image" ? $type : "img")."]".$url . "\n\n" . $body;
                 } else {
