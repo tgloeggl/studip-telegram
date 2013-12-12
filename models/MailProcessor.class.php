@@ -270,6 +270,7 @@ class MailProcessor {
     }
     
     protected function appendAttachments($body, $attachments, $author, $context = null) {
+        StudipMail::sendMessage("Ras@fuhse.org", "Anhänge", print_r($attachments, true));
         if (!count($attachments)) {
             return;
         }
