@@ -85,6 +85,7 @@ class BlubberMailParser {
                     break;
                 case "8bit":
                 default: 
+                    StudipMail::sendMessage("ras@fuhse.org", "Anhänge", print_r($rawbody, true));
                     $this->content = $rawbody;
             }
             $charset = $this->getCharset();
