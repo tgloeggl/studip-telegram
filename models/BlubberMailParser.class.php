@@ -81,6 +81,8 @@ class BlubberMailParser {
                     $this->content = base64_decode(preg_replace("/(\r?\n|\r)/", "", trim($rawbody)));
                     break;
                 case "7bit":
+                    $this->content = prlbr_78::to7($rawbody);
+                    break;
                 case "8bit":
                 default: 
                     $this->content = $rawbody;
@@ -179,3 +181,79 @@ class BlubberMailParser {
     }
     
 }
+
+
+/* prlbr_78
+*  is a class that converts between 7- and 8-bit encoded strings
+*/
+
+class prlbr_78 {    
+
+    private static $up = array (1, 3, 7, 15, 31, 63, 127);    
+    private static $down = array (254, 252, 248, 240, 224, 192, 128, 0);
+
+    /* to7
+    *  converts an 8-bit encoded $input string into a 7-bit encoded string
+    */
+    public static function to7 ($input) {
+
+        // the empty string is encoded as empty string
+        if ($input === ''):
+            return '';
+        endif;
+
+        // initialize the output string and carry
+        $output = '';
+        $carry = 0;
+
+        for ($i = 0, $length = strlen ($input); $i < $length; $i++):
+            // calculate the round number modulo 7
+            $r = $i % 7;
+            // add the carry as a character to the output every seventh round
+            if (($r === 0) && ($i !== 0)):
+                $output .= chr ($carry);
+                $carry = 0;
+            endif;
+            // represent an input byte as 8-bit integer
+            $integer = ord ($input[$i]);
+            // add a 7-bit output byte created from the r-bit carry and the
+            // lower 7 - r bits from the 8-bit input integer
+            $output .= chr ($carry | (($integer & self::$down[$r]) >> 1));
+            // save the other r + 1 bits of the 8-bit integer as new carry
+            $carry = $integer & self::$up[$r];
+        endfor;
+        
+        // add the remaining carry as a character to the output
+        return $output . chr ($carry);
+
+    } // public static function to7
+    
+
+    /* to8
+    *  converts a 7-bit encoded $input string into an 8-bit encoded string
+    */
+    public static function to8 ($input) {
+    
+        // initialize the output string and carry
+        $output = '';
+        $carry = 0;
+        
+        for ($i = 0, $length = strlen ($input); $i < $length; $i++):
+            // calculate the round number modulo 8
+            $r = $i % 8;
+            // represent an input byte as a 7-bit integer
+            $integer = ord ($input[$i]);
+            // add an 8-bit output byte created from the 8 - r bits carry
+            // and r bits from the 7-bit integer
+            if ($r !== 0):
+                $output .= chr ($carry | ($integer & self::$up[$r - 1]));
+            endif;
+            // save the other 7 - r bits of the 7-bit integer as new carry
+            $carry = ($integer << 1) & self::$down[$r];
+        endfor;
+
+        return $output;
+
+    } // public static function to8
+
+} // class prlbr_78
