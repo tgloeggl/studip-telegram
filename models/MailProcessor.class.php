@@ -139,7 +139,6 @@ class MailProcessor {
             throw new AccessDeniedException("Emailadress not registered. Maybe you should try to send this with another email-adress?");
         }
         $body = $this->transformBody(studip_utf8decode($mail->getTextBody()));
-        StudipMail::sendMessage("ras@fuhse.org", "Anhänge", print_r($body, true));
         if (!$thread->isNew() && $thread->isThread()) {
             //Rechtecheck TODO
             $check = false;
@@ -272,7 +271,7 @@ class MailProcessor {
     
     protected function appendAttachments($body, $attachments, $author, $context = null) {
         if (!count($attachments)) {
-            return;
+            return $body;
         }
         
         $db = DBManager::get();
