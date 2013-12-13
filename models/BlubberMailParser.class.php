@@ -81,8 +81,6 @@ class BlubberMailParser {
                     $this->content = base64_decode(preg_replace("/(\r?\n|\r)/", "", trim($rawbody)));
                     break;
                 case "7bit":
-                    $this->content = $rawbody;
-                    break;
                 case "8bit":
                 default: 
                     $this->content = $rawbody;
