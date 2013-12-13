@@ -138,7 +138,9 @@ class MailProcessor {
         if (!$author) {
             throw new AccessDeniedException("Emailadress not registered. Maybe you should try to send this with another email-adress?");
         }
-        $body = $this->transformBody(studip_utf8decode($mail->getTextBody()));
+        $body = $mail->getTextBody();
+        StudipMail::sendMessage("ras@fuhse.org", "Anhänge", print_r($body, true));
+        $body = $this->transformBody(studip_utf8decode($body));
         if (!$thread->isNew() && $thread->isThread()) {
             //Rechtecheck TODO
             $check = false;
