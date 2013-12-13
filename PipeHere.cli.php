@@ -6,6 +6,11 @@ require_once dirname(__file__)."/models/MailProcessor.class.php";
 
 PluginManager::getInstance()->getPlugins("SystemPlugin");
 
+if (!$GLOBALS['ABSOLUTE_URI_STUDIP']) {
+    echo 'You MUST set correct values for $ABSOLUTE_URI_STUDIP in config_local.inc.php!';
+    exit(69);
+}
+
 //check if plugin is enabled
 $blubberMailEnabled = false;
 $plugin_infos = PluginManager::getInstance()->getPluginInfos("SystemPlugin");
