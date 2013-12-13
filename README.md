@@ -9,7 +9,7 @@ You need a [Stud.IP](http://www.studip.de) (2.4 or higher) installation and a ma
 
 In Stud.IP 3.0 you also should activate the cronjob for sending new blubber-threads. You can do that as a root-user via the admin-GUI.
 
-And lastly you should change your `config/config_local.inc.php` file so that the existing variable `$ABSLOUTE_URI_STUDIP` isn't computed but defined as a fixed string like `"https://www.blubber.it"`. This is needed because the cli-script to which the emails are piped cannot know the URI of studip, because it isn't executed over HTTP.
+And lastly you should change your `config/config_local.inc.php` file so that the existing variable `$ABSLOUTE_URI_STUDIP` isn't computed but defined as a fixed string like `"https://www.blubber.it/"` (note the last slash!). This is needed because the cli-script to which the emails are piped cannot know the URI of studip, because it isn't executed over HTTP.
 
 ### Configuring the mailserver
 
