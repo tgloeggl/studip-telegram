@@ -15,7 +15,7 @@ class SendMailTreads extends CronJob
      */
     public static function getDescription()
     {
-        return _('Nutzer können Blubber-Streams unter Einstellungen->Blubber->Mails abonieren. Mit diesem Cronjob wird gesichert, dass neue Blubber-Threads (keine Kommentare) verschickt werden.');
+        return _('Nutzer kÃ¶nnen Blubber-Streams unter Einstellungen->Blubber->Mails abonieren. Mit diesem Cronjob wird gesichert, dass neue Blubber-Threads (keine Kommentare) verschickt werden.');
     }
 
     /**
@@ -27,7 +27,6 @@ class SendMailTreads extends CronJob
         require_once 'lib/language.inc.php';
         require_once 'lib/functions.php';
         require_once 'lib/classes/StudipMail.class.php';
-        require_once 'lib/classes/User.class.php';
         require_once 'lib/classes/URLHelper.php';
         require_once 'lib/models/MailQueueEntries.class.php';
         require_once dirname(__file__)."/../../core/Blubber/models/BlubberStream.class.php";
