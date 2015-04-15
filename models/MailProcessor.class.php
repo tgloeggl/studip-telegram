@@ -167,9 +167,9 @@ class MailProcessor {
                     break;
             }
             if ($check && $body) {
-                //Anhänge hinzufügen:
+                //AnhÃ¤nge hinzufÃ¼gen:
                 $body = $this->appendAttachments($body, $mail->getAttachments(), $author, $thread);
-                //Blubber hinzufügen:
+                //Blubber hinzufÃ¼gen:
                 $old_fake_root = $GLOBALS['user'];
                 $faked_root = new User();
                 $faked_root->user_id = $author['user_id'];
@@ -389,7 +389,7 @@ class MailProcessor {
                 $body .= ">".$line."\n";
             }
         }
-        //Noch den Originalbeitrag zitieren (wenn nötig)
+        //Noch den Originalbeitrag zitieren (wenn nÃ¶tig)
         if (($blubber['root_id'] !== $blubber->getId()) && ($before_blubb->getId() !== $blubber['root_id'])) {
             $body .= "\n\n>".sprintf(_("Am %s schrieb %s"), date("j.n.Y G:i", $thread['mkdate']), $thread->getUser()->getName()).":\n";
             foreach (explode("\n", $thread['description']) as $line) {
@@ -398,7 +398,8 @@ class MailProcessor {
         }
 
         $body .= "\n\n";
-        $body .= dgettext("blubbermail", "Sie können auf diese Mail ganz normal antworten und Ihre Antwort wird zu einem Blubber-Kommentar.");
+        $body .= "-- \n";
+        $body .= dgettext("blubbermail", "Sie kÃ¶nnen auf diese Mail ganz normal antworten und Ihre Antwort wird zu einem Blubber-Kommentar.");
         $body .= "\n";
         $body .= dgettext("blubbermail", "Zum Abstellen oder konfigurieren der Blubber-Mails melden Sie sich in Stud.IP an und gehen Sie auf folgende URL:");
         $body .= "\n";
