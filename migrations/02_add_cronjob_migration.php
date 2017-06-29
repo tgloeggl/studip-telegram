@@ -1,7 +1,7 @@
 <?php
-class AddCronjobMigration extends DBMigration
+class AddCronjobMigration extends Migration
 {
-    function up() 
+    function up()
     {
         $new_job = array(
             'filename'    => 'public/plugins_packages/RasmusFuhse/BlubberMail/SendMailThreads.cronjob.php',
@@ -40,7 +40,7 @@ class AddCronjobMigration extends DBMigration
             ':priority'    => $new_job['priority'],
             ':minute'      => $new_job['minute'],
         ));
-        
+
         //Neue Tabelle:
         $create_table = DBManager::get()->prepare("
             CREATE TABLE IF NOT EXISTS `blubbermail_abos` (
@@ -48,7 +48,7 @@ class AddCronjobMigration extends DBMigration
                 `user_id` varchar(32) NOT NULL,
                 `last_update` bigint(20) NOT NULL,
                 UNIQUE KEY `unique_user_streams` (`stream_id`,`user_id`)
-            ) ENGINE=MyISAM 
+            ) ENGINE=MyISAM
         ");
         $create_table->execute();
     }

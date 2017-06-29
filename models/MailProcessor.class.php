@@ -1,17 +1,17 @@
 <?php
 
 require_once dirname(__file__)."/BlubberMailParser.class.php";
-require_once dirname(__file__)."/../../../core/Blubber/models/BlubberPosting.class.php";
+// require_once dirname(__file__)."/../../../core/Blubber/models/BlubberPosting.class.php";
 
 class MailProcessor {
-    
+
     static private $instance = null;
-    
+
     //These three variables may be overwritten by local configs. See constructor.
     protected $mailaccount = "blubb";
     protected $delimiter   = "+";
     protected $maildomain  = null;
-    
+
     static public function getInstance() {
         if (self::$instance === null) {
             self::$instance = new MailProcessor();
@@ -19,7 +19,7 @@ class MailProcessor {
         }
         return self::$instance;
     }
-    
+
     public function __construct() {
         $this->maildomain = $_SERVER['SERVER_NAME'];
         if (strtolower(substr($this->maildomain, 0, 4)) === "www.") {
@@ -39,11 +39,11 @@ class MailProcessor {
             $this->maildomain = $maildomain;
         }
     }
-    
+
     public function getReplyMail($thread_id) {
         return $this->mailaccount.$this->delimiter.$thread_id."@".$this->maildomain;
     }
-    
+
     public function sendBlubberMails($event, BlubberPosting $blubber) {
         if (!$blubber['user_id'] || !$blubber['description'] || $blubber['root_id'] === $blubber->getId()) {
             return;
@@ -59,16 +59,16 @@ class MailProcessor {
                 "AND user_id != :author_id " .
         "");
         $recipients_statement->execute(array(
-            'thread_id' => $blubber['root_id'], 
+            'thread_id' => $blubber['root_id'],
             'author_id' => $blubber['user_id']
         ));
         $recipient_ids = $recipients_statement->fetchAll(PDO::FETCH_COLUMN, 0);
-        
+
         foreach ($recipient_ids as $user_id) {
             if ($this->userWantsMail($user_id, $blubber['root_id'])) {
                 $recipient = new User($user_id);
                 $body = $this->getMailText($blubber, $user_id);
-                        
+
                 $mail = new StudipMail();
                 $mail->setSubject("Re: ".$thread['name']);
                 $mail->setSenderName($author->getName());
@@ -84,7 +84,7 @@ class MailProcessor {
             }
         }
     }
-    
+
     protected function userWantsMail($user_id, $thread_id) {
         $max_notifications = UserConfig::get($user_id)->getValue("BLUBBER_MAX_USER_NOTIFICATIONS");
         if ($max_notifications === "all" OR $max_notifications === null) {
@@ -106,7 +106,7 @@ class MailProcessor {
             return false;
         }
     }
-    
+
     public function processBlubberMail($rawmail) {
         $email_regular_expression='/([-+.0-9=?A-Z_a-z{|}~])+@([-.0-9=?A-Z_a-z{|}~])+\.[a-zA-Z]{2,6}/i';
         $success = false;
@@ -114,7 +114,7 @@ class MailProcessor {
         $from = $mail->getHeader("From");
         preg_match($email_regular_expression, $from, $matches);
         $frommail = $matches[0];
-        
+
         foreach (explode(",", $mail->getHeader("To").",".$mail->getHeader("CC")) as $recipient) {
             $me = preg_match('/'.$this->mailaccount.'['.$this->delimiter.']([^@]*)@'.$this->maildomain.'/i', $recipient, $matches);
             if ($me) {
@@ -181,7 +181,7 @@ class MailProcessor {
                 StudipTransformFormat::addStudipMarkup("mention2", '@[^\s]*[\d\w_]+', "", "BlubberPosting::mention");
                 $body = transformBeforeSave($body);
                 $GLOBALS['user'] = $old_fake_root;
-                
+
                 $comment = new BlubberPosting();
                 $comment['description'] = $body;
                 $comment['name'] = $thread['name'];
@@ -191,7 +191,7 @@ class MailProcessor {
                 $comment['external_contact'] = 0;
                 $comment['user_id'] = $author['user_id'];
                 $success = $comment->store();
-                
+
                 if (true) { //to be version-dependend
                     //Notifications:
                     $user_ids = array();
@@ -229,7 +229,7 @@ class MailProcessor {
             //create a new blubber. This is the drop-dead-evil api function to
             //create a public or private blubber-thread with an email.
             $thread->setId($thread->getNewId());
-            
+
             //transform before save
             BlubberPosting::$mention_posting_id = $thread->getId();
             StudipTransformFormat::addStudipMarkup("mention1", '@\"[^\n\"]*\"', "", "BlubberPosting::mention");
@@ -242,7 +242,7 @@ class MailProcessor {
             $GLOBALS['user'] = new Seminar_User($faked_root);
             $body = transformBeforeSave($body);
             $GLOBALS['user'] = $old_fake_root;
-            
+
             $thread['description'] = $body;
             $thread['name'] = $thread['name'];
             $thread['parent_id'] = 0;
@@ -268,12 +268,12 @@ class MailProcessor {
         }
         return $success;
     }
-    
+
     protected function appendAttachments($body, $attachments, $author, $context = null) {
         if (!count($attachments)) {
             return $body;
         }
-        
+
         $db = DBManager::get();
         $folder_context = $context && $context['context_type'] === "course" ? $context['Seminar_id'] : $author['user_id'];
         $folder_id = md5("Blubber_".$folder_context."_".$author['user_id']);
@@ -317,7 +317,7 @@ class MailProcessor {
                 "");
             }
         }
-        
+
         foreach ($attachments as $attachment) {
             $doc = array();
             $doc['user_id'] = $author['user_id'];
@@ -342,23 +342,23 @@ class MailProcessor {
         }
         return $body;
     }
-    
+
     protected function transformBody($body) {
         $body = $this->eraseSignature($body);
         $body = $this->eraseTOFUQuotes($body);
         return trim($body);
     }
-    
+
     public function eraseSignature($body) {
         if (stripos($body, "\n-- \n") !== false) {
             $body = substr($body, 0, stripos($body, "\n-- \n"));
         }
         return $body;
     }
-    
+
     /**
-     * Most people are answering mails by quoting the whole discussion on the bottom 
-     * of the email. This is called TOFU. In Blubber, we always have the context 
+     * Most people are answering mails by quoting the whole discussion on the bottom
+     * of the email. This is called TOFU. In Blubber, we always have the context
      * of a message and display it directly. So we don't need this TOFU-stuff and
      * want to get rid of them.
      * @param string $body : plaint text body message of the email
@@ -372,7 +372,7 @@ class MailProcessor {
         } while($old_body !== $body);
         return $body;
     }
-    
+
     public function getMailText($blubber, $user_id) {
         setTempLanguage($user_id);
         $body = $blubber['description'];
