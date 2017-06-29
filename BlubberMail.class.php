@@ -69,10 +69,6 @@ class BlubberMail extends StudIPPlugin implements SystemPlugin {
 
     public function setHook_action($api_key, $bot_name)
     {
-        // $API_KEY = '388534691:AAHAe6amae5e8rSpQuGyuK2B3ltnyZuiZGE';
-        // $BOT_NAME = 'studip_bot';
-        // $hook_url = 'https://messenger.smartsh.it/tel_hook.php';
-
         $hook_url = URLHelper::getLink($GLOBALS['ABSOLUTE_URI_STUDIP'] . 'plugins.php/blubbermail/webhook/' . $bot_name);
 
         $stmt = DBManager::get()->prepare("INSERT IGNORE INTO telegram_bot_config (botname, api_key, owner_id, webhook) VALUES (?, ?, ?, ?)");
@@ -97,8 +93,6 @@ class BlubberMail extends StudIPPlugin implements SystemPlugin {
 
     public function webhook_action($bot_name)
     {
-        // $api_key = '388534691:AAHAe6amae5e8rSpQuGyuK2B3ltnyZuiZGE';
-
         $stmt_log = DBManager::get()->prepare("INSERT INTO telegram_log (data) VALUES (?)");
         $stmt_log->execute(array("Aufruf des Webhooks: \n\n" . $bot_name . "\n\n" . print_r($_REQUEST, 1) . "\n\n" .print_r($_SERVER, 1)));
 
