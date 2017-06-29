@@ -4,10 +4,13 @@ Follow the instructions at
 
 https://github.com/php-telegram-bot/core#create-your-first-bot
 
-to create your own telegram bot
+to create your own telegram bot.
 
 
 You need to run _composer install_ as well. See https://getcomposer.org/
+
+The used third party library to interface with Telegram is located at
+https://github.com/php-telegram-bot/core
 
 ## Current API
 
